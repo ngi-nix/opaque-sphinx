@@ -61,6 +61,7 @@
         import nixpkgs {
           inherit system;
           overlays = [ self.overlay ];
+          config.android_sdk.accept_license = true;
         });
 
     in {
@@ -68,10 +69,12 @@
       # A Nixpkgs overlay.
       overlay = final: prev:
         with final.pkgs; {
+
           sdk = pkgs.androidenv.composeAndroidPackages {
-            buildToolsVersions = [ "28.0.3" ];
-            platformVersions = [ "28" "29" ];
-            abiVersions = [ "x86" "x86_64" "armeabi-v7a" ]; # todo: v8a
+            buildToolsVersions = [ "28.0.3" "29.0.3" ];
+            platformVersions = [ "29" ];
+            abiVersions =
+              [ "x86" "x86_64" "armeabi-v7a" "armeabi-v8a" ]; # todo: v8a
             includeNDK = true;
             ndkVersion = "22.0.7026061";
           };
@@ -85,11 +88,12 @@
 
           libsodium-src = libsodium.src;
           androidSystem = androidSystemByNixSystem.${system};
+          buildGradle = callPackage ./gradle-env.nix { };
 
           androsphinxCryptoLibs = stdenvNoCC.mkDerivation {
             name = "androsphinxCryptoLibs";
             src = androsphinx-src;
-            # buildInputs = [ pkgconf ];
+            buildInputs = [ pkgconf ];
 
             patches = [ ./build-libsphinx.sh.patch ];
 
@@ -117,6 +121,31 @@
           # test - Run unit tests for all variants.
           # testDebugUnitTest - Run unit tests for the debug build.
           # testReleaseUnitTest - Run unit tests for the release build.
+          androsphinx = buildGradle {
+            envSpec = ./gradle-env.json;
+
+            src = androsphinx-src;
+
+            preBuild = ''
+              # Copy previously compiled *.so files to make them available in the app.
+              cp -r ${androsphinxCryptoLibs}/jniLibs app/src/main/
+
+              # Make gradle aware of Android SDK.
+              # See https://github.com/tadfisher/gradle2nix/issues/13
+              echo "sdk.dir = ${sdk.androidsdk}/libexec/android-sdk" > local.properties
+              printf "\nandroid.aapt2FromMavenOverride=${sdk.androidsdk}/libexec/android-sdk/build-tools/29.0.3/aapt2" >> gradle.properties
+            '';
+
+            #gradleFlags = [ "check" "test"];
+            gradleFlags = [ "build" ];
+
+            installPhase = ''
+              mkdir -p $out
+              ls -alR app/build
+              # cp -r app/build/install/myproject $out
+              find . -name '*.apk' -exec cp {} $out \;
+            '';
+          };
           hello = with final;
             stdenv.mkDerivation rec {
               name = "hello-${version}";
@@ -150,7 +179,7 @@
 
       # Provide some binary packages for selected system types.
       packages = forAllSystems (system: {
-        inherit (nixpkgsFor.${system}) hello androsphinxCryptoLibs;
+        inherit (nixpkgsFor.${system}) hello androsphinxCryptoLibs androsphinx;
       });
 
       # The default package for 'nix build'. This makes sense if the
