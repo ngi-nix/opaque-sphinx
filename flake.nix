@@ -1,8 +1,30 @@
 {
   description = "(insert short project description here)";
 
-  # Nixpkgs / NixOS version to use.
-  inputs.nixpkgs.url = "nixpkgs/nixos-20.09";
+  # nixpkgs-unstable-2021-01-27
+  inputs.nixpkgs = {
+    type = "github";
+    owner = "NixOS";
+    repo = "nixpkgs";
+    ref = "652b2d6dba246abd696bc6f2cb8b30032ed4fb56";
+  };
+
+  inputs.androsphinx-src = {
+    type = "github";
+    owner = "dnet";
+    repo = "androsphinx";
+    rev = "0bf34e1a4ff6a8c2dbb9c66c64b2f7381cef173f";
+    flake = false;
+  };
+
+  inputs.libsphinx-src = {
+    type = "github";
+    owner = "stef";
+    repo = "libsphinx";
+    rev = "51b0c18c94b645bd7ea3bb21aef623318e0b7939";
+    # sha256 = "1nk8d14n9i640b0c86ajm1i181xfg203s823b9jd5gx5y7ycpslg";
+    flake = false;
+  };
 
   # Upstream source tree(s).
   inputs.hello-src = {
@@ -14,7 +36,8 @@
     flake = false;
   };
 
-  outputs = { self, nixpkgs, hello-src, gnulib-src }:
+  outputs =
+    { self, nixpkgs, androsphinx-src, libsphinx-src, hello-src, gnulib-src }:
     let
 
       # Generate a user-friendly version numer.
@@ -22,6 +45,12 @@
 
       # System types to support.
       supportedSystems = [ "x86_64-linux" ];
+
+      # Mapping from Nix' "system" to Android's "system".
+      androidSystemByNixSystem = {
+        "x86_64-linux" = "linux-x86_64";
+        "x86_64-darwin" = "darwin-x86_64";
+      };
 
       # Helper function to generate an attrset '{ x86_64-linux = f "x86_64-linux"; ... }'.
       forAllSystems = f:
@@ -37,33 +66,92 @@
     in {
 
       # A Nixpkgs overlay.
-      overlay = final: prev: {
-
-        hello = with final;
-          stdenv.mkDerivation rec {
-            name = "hello-${version}";
-
-            src = hello-src;
-
-            buildInputs =
-              [ autoconf automake gettext gnulib perl gperf texinfo help2man ];
-
-            preConfigure = ''
-              mkdir -p .git # force BUILD_FROM_GIT
-              ./bootstrap --gnulib-srcdir=${gnulib-src} --no-git --skip-po
-            '';
-
-            meta = {
-              homepage = "https://www.gnu.org/software/hello/";
-              description = "A program to show a familiar, friendly greeting";
-            };
+      overlay = final: prev:
+        with final.pkgs; {
+          sdk = pkgs.androidenv.composeAndroidPackages {
+            buildToolsVersions = [ "28.0.3" ];
+            platformVersions = [ "28" "29" ];
+            abiVersions = [ "x86" "x86_64" "armeabi-v7a" ]; # todo: v8a
+            includeNDK = true;
+            ndkVersion = "22.0.7026061";
           };
+          # Todo: use nixpkgs with merged PR:
+          # https://github.com/NixOS/nixpkgs/pull/115229
+          # and replace ndk by snd.ndk-bundle;
+          ndk = sdk.ndk-bundle.overrideAttrs (oldAttrs: rec {
+            postPatch =
+              "sed -i 's|#!/bin/bash|#!${pkgs.bash}/bin/bash|' $(pwd)/build/tools/make_standalone_toolchain.py ";
+          });
 
-      };
+          libsodium-src = libsodium.src;
+          androidSystem = androidSystemByNixSystem.${system};
+
+          androsphinxCryptoLibs = stdenvNoCC.mkDerivation {
+            name = "androsphinxCryptoLibs";
+            src = androsphinx-src;
+            # buildInputs = [ pkgconf ];
+
+            patches = [ ./build-libsphinx.sh.patch ];
+
+            dontConfigure = true;
+
+            buildPhase = ''
+              export ANDROID_NDK_HOME=${ndk}/libexec/android-sdk/ndk-bundle
+              export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/${androidSystem}/bin:$PATH
+              rm -rf libsodium libsphinx
+              tar -xzf ${libsodium-src} && mv ./libsodium-* libsodium
+              cp -r ${libsphinx-src} ./libsphinx
+              chmod -R +w ./libsphinx
+              sh ./build-libsphinx.sh
+            '';
+            # todo: no shrink executables?
+
+            installPhase = ''
+              mkdir $out
+              cp -r app/src/main/jniLibs $out
+              ls -alh $out
+            '';
+          };
+          # gradle tasks:
+          # check - Runs all checks.
+          # test - Run unit tests for all variants.
+          # testDebugUnitTest - Run unit tests for the debug build.
+          # testReleaseUnitTest - Run unit tests for the release build.
+          hello = with final;
+            stdenv.mkDerivation rec {
+              name = "hello-${version}";
+
+              src = hello-src;
+
+              buildInputs = [
+                androsphinxCryptoLibs
+                autoconf
+                automake
+                gettext
+                gnulib
+                perl
+                gperf
+                texinfo
+                help2man
+              ];
+
+              preConfigure = ''
+                mkdir -p .git # force BUILD_FROM_GIT
+                ./bootstrap --gnulib-srcdir=${gnulib-src} --no-git --skip-po
+              '';
+
+              meta = {
+                homepage = "https://www.gnu.org/software/hello/";
+                description = "A program to show a familiar, friendly greeting";
+              };
+            };
+
+        };
 
       # Provide some binary packages for selected system types.
-      packages =
-        forAllSystems (system: { inherit (nixpkgsFor.${system}) hello; });
+      packages = forAllSystems (system: {
+        inherit (nixpkgsFor.${system}) hello androsphinxCryptoLibs;
+      });
 
       # The default package for 'nix build'. This makes sense if the
       # flake provides only one package or there is a clear "main"

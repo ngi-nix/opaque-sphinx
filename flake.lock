@@ -1,5 +1,22 @@
 {
   "nodes": {
+    "androsphinx-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1615142321,
+        "narHash": "sha256-JbSlwPlqVZEuY4AlrVOOwXjEoD27juQottVKGPJ+gkg=",
+        "owner": "dnet",
+        "repo": "androsphinx",
+        "rev": "0bf34e1a4ff6a8c2dbb9c66c64b2f7381cef173f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dnet",
+        "repo": "androsphinx",
+        "rev": "0bf34e1a4ff6a8c2dbb9c66c64b2f7381cef173f",
+        "type": "github"
+      }
+    },
     "gnulib-src": {
       "flake": false,
       "locked": {
@@ -32,25 +49,45 @@
         "url": "https://git.savannah.gnu.org/git/hello.git"
       }
     },
-    "nixpkgs": {
+    "libsphinx-src": {
+      "flake": false,
       "locked": {
-        "lastModified": 1603528673,
-        "narHash": "sha256-iFrxF9GMes1jH7v8qjep1BsQYEq/admkEv/gJoqQsHo=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "95d26c9a9f2a102e25cf318a648de44537f42e09",
+        "lastModified": 1612732677,
+        "narHash": "sha256-j+rL/PGlv9JkWkMgPYB4rgcUYqhSGcTAAsTEZEloaNo=",
+        "owner": "stef",
+        "repo": "libsphinx",
+        "rev": "51b0c18c94b645bd7ea3bb21aef623318e0b7939",
         "type": "github"
       },
       "original": {
-        "id": "nixpkgs",
-        "ref": "nixos-20.09",
-        "type": "indirect"
+        "owner": "stef",
+        "repo": "libsphinx",
+        "rev": "51b0c18c94b645bd7ea3bb21aef623318e0b7939",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1611715046,
+        "narHash": "sha256-wiR2hLfkogUqhNULgxEsohSGJAEvLT/jH7s+AnyYvNA=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "652b2d6dba246abd696bc6f2cb8b30032ed4fb56",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "652b2d6dba246abd696bc6f2cb8b30032ed4fb56",
+        "repo": "nixpkgs",
+        "type": "github"
       }
     },
     "root": {
       "inputs": {
+        "androsphinx-src": "androsphinx-src",
         "gnulib-src": "gnulib-src",
         "hello-src": "hello-src",
+        "libsphinx-src": "libsphinx-src",
         "nixpkgs": "nixpkgs"
       }
     }
