@@ -88,6 +88,7 @@
 
           # Use upstream src from nixpkgs.
           libsodium-src = libsodium.src;
+          pysodium = callPackage ./pkgs/pysodium { pkgs = final.pkgs; };
 
           androidSystem = androidSystemByNixSystem.${system};
           buildGradle = callPackage ./gradle-env.nix { };
@@ -179,9 +180,18 @@
 
         };
 
+      # Provide a nix-shell env to work with.
+      devShell = forAllSystems (system:
+        with nixpkgsFor.${system};
+        mkShell {
+          buildInputs = [ pysodium ];
+          shellHook = "";
+        });
+
       # Provide some binary packages for selected system types.
       packages = forAllSystems (system: {
-        inherit (nixpkgsFor.${system}) hello androsphinxCryptoLibs androsphinx;
+        inherit (nixpkgsFor.${system})
+          hello androsphinxCryptoLibs androsphinx pysodium;
       });
 
       # The default package for 'nix build'. This makes sense if the
