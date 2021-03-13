@@ -87,8 +87,14 @@
           });
 
           # Use upstream src from nixpkgs.
+          py3Pkgs = final.pkgs.python3.pkgs;
+          buildPythonPackage = py3Pkgs.buildPythonPackage;
+          fetchPypi = py3Pkgs.fetchPypi;
           libsodium-src = libsodium.src;
           pysodium = callPackage ./pkgs/pysodium { pkgs = final.pkgs; };
+          securestring = callPackage ./pkgs/SecureString {
+            inherit buildPythonPackage fetchPypi;
+          };
 
           androidSystem = androidSystemByNixSystem.${system};
           buildGradle = callPackage ./gradle-env.nix { };
@@ -184,7 +190,7 @@
       devShell = forAllSystems (system:
         with nixpkgsFor.${system};
         mkShell {
-          buildInputs = [ pysodium ];
+          buildInputs = [ pysodium securestring ];
           shellHook = "";
         });
 
