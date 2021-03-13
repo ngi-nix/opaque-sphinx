@@ -86,7 +86,9 @@
               "sed -i 's|#!/bin/bash|#!${pkgs.bash}/bin/bash|' $(pwd)/build/tools/make_standalone_toolchain.py ";
           });
 
+          # Use upstream src from nixpkgs.
           libsodium-src = libsodium.src;
+
           androidSystem = androidSystemByNixSystem.${system};
           buildGradle = callPackage ./gradle-env.nix { };
 
