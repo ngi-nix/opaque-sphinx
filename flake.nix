@@ -36,12 +36,14 @@
     flake = false;
   };
 
-  outputs =
-    { self, nixpkgs, androsphinx-src, libsphinx-src, hello-src, gnulib-src }:
+  outputs = { self, nixpkgs, androsphinx-src, libsphinx-src, pwdsphinx-src
+    , hello-src, gnulib-src }:
     let
 
       # Generate a user-friendly version numer.
       version = builtins.substring 0 8 hello-src.lastModifiedDate;
+      pwdsphinx-version = "0.5";
+      libsphinx-version = builtins.substring 0 8 libsphinx-src.rev;
 
       # System types to support.
       supportedSystems = [ "x86_64-linux" ];
@@ -93,7 +95,18 @@
           libsodium-src = libsodium.src;
           pysodium = callPackage ./pkgs/pysodium { pkgs = final.pkgs; };
           securestring = callPackage ./pkgs/SecureString {
-            inherit buildPythonPackage fetchPypi;
+            version = "0.2";
+            sha256 = "119x40m9xg685xrc2k1qq1wkf36ig7dy48ln3ypiqws1r50z6ck4";
+          };
+          libsphinx = callPackage ./pkgs/libsphinx {
+            pkgs = final.pkgs;
+            src = libsphinx-src;
+            version = libsphinx-version;
+          };
+
+          pwdsphinx = callPackage ./pkgs/pwdsphinx {
+            src = pwdsphinx-src;
+            version = pwdsphinx-version;
           };
 
           androidSystem = androidSystemByNixSystem.${system};
@@ -197,7 +210,8 @@
       # Provide some binary packages for selected system types.
       packages = forAllSystems (system: {
         inherit (nixpkgsFor.${system})
-          hello androsphinxCryptoLibs androsphinx pysodium;
+          hello androsphinxCryptoLibs androsphinx pysodium securestring
+          libsphinx;
       });
 
       # The default package for 'nix build'. This makes sense if the
