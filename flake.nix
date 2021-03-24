@@ -149,31 +149,9 @@
           # test - Run unit tests for all variants.
           # testDebugUnitTest - Run unit tests for the debug build.
           # testReleaseUnitTest - Run unit tests for the release build.
-          androsphinx = buildGradle {
-            envSpec = ./gradle-env.json;
+          androsphinx =
+            callPackage ./pkgs/androsphinx { src = androsphinx-src; };
 
-            src = androsphinx-src;
-
-            preBuild = ''
-              # Copy previously compiled *.so files to make them available in the app.
-              cp -r ${androsphinxCryptoLibs}/jniLibs app/src/main/
-
-              # Make gradle aware of Android SDK.
-              # See https://github.com/tadfisher/gradle2nix/issues/13
-              echo "sdk.dir = ${sdk.androidsdk}/libexec/android-sdk" > local.properties
-              printf "\nandroid.aapt2FromMavenOverride=${sdk.androidsdk}/libexec/android-sdk/build-tools/29.0.3/aapt2" >> gradle.properties
-            '';
-
-            #gradleFlags = [ "check" "test"];
-            gradleFlags = [ "build" ];
-
-            installPhase = ''
-              mkdir -p $out
-              ls -alR app/build
-              # cp -r app/build/install/myproject $out
-              find . -name '*.apk' -exec cp {} $out \;
-            '';
-          };
           hello = with final;
             stdenv.mkDerivation rec {
               name = "hello-${version}";
