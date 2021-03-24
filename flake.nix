@@ -22,7 +22,13 @@
     owner = "stef";
     repo = "libsphinx";
     rev = "51b0c18c94b645bd7ea3bb21aef623318e0b7939";
-    # sha256 = "1nk8d14n9i640b0c86ajm1i181xfg203s823b9jd5gx5y7ycpslg";
+    flake = false;
+  };
+  inputs.pwdsphinx-src = {
+    type = "github";
+    owner = "stef";
+    repo = "pwdsphinx";
+    rev = "b0518878dc31f27d555becb9e5ed8056564da11d";
     flake = false;
   };
 
@@ -103,8 +109,8 @@
             src = libsphinx-src;
             version = libsphinx-version;
           };
-
           pwdsphinx = callPackage ./pkgs/pwdsphinx {
+            pkgs = final.pkgs;
             src = pwdsphinx-src;
             version = pwdsphinx-version;
           };
@@ -211,7 +217,7 @@
       packages = forAllSystems (system: {
         inherit (nixpkgsFor.${system})
           hello androsphinxCryptoLibs androsphinx pysodium securestring
-          libsphinx;
+          libsphinx pwdsphinx;
       });
 
       # The default package for 'nix build'. This makes sense if the
