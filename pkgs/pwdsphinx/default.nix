@@ -5,7 +5,7 @@ buildPythonPackage rec {
   pname = "pwdsphinx";
   inherit src version;
 
-  propagatedBuildInputs = [ libsodium libsphinx pysodium securestring ];
+  propagatedBuildInputs = [ libsphinx pysodium securestring ];
 
   postPatch = let soext = stdenv.hostPlatform.extensions.sharedLibrary;
   in ''
