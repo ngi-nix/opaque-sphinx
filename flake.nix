@@ -99,7 +99,10 @@
           buildPythonPackage = py3Pkgs.buildPythonPackage;
           fetchPypi = py3Pkgs.fetchPypi;
           libsodium-src = libsodium.src;
-          pysodium = callPackage ./pkgs/pysodium { pkgs = final.pkgs; };
+          pysodium = callPackage ./pkgs/pysodium {
+            version = "0.7.5";
+            sha256 = "0vlcvx3rrhp72fbb6kl1rj51cwpjknj2d1xasmmsfif95iwi026p";
+          };
           securestring = callPackage ./pkgs/SecureString {
             version = "0.2";
             sha256 = "119x40m9xg685xrc2k1qq1wkf36ig7dy48ln3ypiqws1r50z6ck4";

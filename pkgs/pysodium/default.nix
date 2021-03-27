@@ -1,14 +1,9 @@
-{ pkgs }:
-with pkgs;
-let py3Pkgs = pkgs.python3.pkgs;
-in py3Pkgs.buildPythonPackage rec {
+{ version, sha256, stdenv, lib, buildPythonPackage, fetchPypi, libsodium }:
+buildPythonPackage rec {
   pname = "pysodium";
-  version = "0.7.5";
+  inherit version;
 
-  src = py3Pkgs.fetchPypi {
-    inherit pname version;
-    sha256 = "0vlcvx3rrhp72fbb6kl1rj51cwpjknj2d1xasmmsfif95iwi026p";
-  };
+  src = fetchPypi { inherit pname version sha256; };
 
   propagatedBuildInputs = [ libsodium ];
 
@@ -19,4 +14,11 @@ in py3Pkgs.buildPythonPackage rec {
     substituteInPlace ./pysodium/__init__.py \
       --replace "ctypes.util.find_library('sodium') or ctypes.util.find_library('libsodium')" "'${libsodium}/lib/libsodium${soext}'"
   '';
+
+  meta = with lib; {
+    description =
+      "A wrapper for libsodium providing high level crypto primitives ";
+    homepage = "https://github.com/stef/pysodium";
+    license = licenses.bsd2;
+  };
 }
