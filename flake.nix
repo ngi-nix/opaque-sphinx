@@ -16,6 +16,13 @@
     rev = "5d143cffd144378e8d50710de6bc05659f8645fd";
     flake = false;
   };
+  inputs.pysodium-src = {
+    type = "github";
+    owner = "stef";
+    repo = "pysodium";
+    rev = "3ffe86a4a2c731a993daac4dc142827201519f03";
+    flake = false;
+  };
   inputs.androsphinx-src = {
     type = "github";
     owner = "dnet";
@@ -49,15 +56,16 @@
     flake = false;
   };
 
-  outputs = { self, nixpkgs, androsphinx-src, libsphinx-src, pwdsphinx-src
-    , hello-src, gnulib-src, securestring-src }:
+  outputs = { self, nixpkgs, securestring-src, pysodium-src, androsphinx-src
+    , libsphinx-src, pwdsphinx-src, hello-src, gnulib-src }:
     let
 
-      # Generate a user-friendly version numer.
+      getVersion = input: builtins.substring 0 7 input.rev;
       version = builtins.substring 0 8 hello-src.lastModifiedDate;
-      securestring-version = builtins.substring 0 8 securestring-src.rev;
+      securestring-version = getVersion securestring-src;
+      pysodium-version = getVersion pysodium-src;
       pwdsphinx-version = "0.5";
-      libsphinx-version = builtins.substring 0 8 libsphinx-src.rev;
+      libsphinx-version = getVersion libsphinx-src;
 
       # System types to support.
       supportedSystems = [ "x86_64-linux" ];
@@ -108,8 +116,8 @@
           fetchPypi = py3Pkgs.fetchPypi;
           libsodium-src = libsodium.src;
           pysodium = callPackage ./pkgs/pysodium {
-            version = "0.7.5";
-            sha256 = "0vlcvx3rrhp72fbb6kl1rj51cwpjknj2d1xasmmsfif95iwi026p";
+            version = pysodium-version;
+            src = pysodium-src;
           };
           securestring = callPackage ./pkgs/securestring {
             version = securestring-version;
