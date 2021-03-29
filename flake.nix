@@ -9,6 +9,13 @@
     ref = "652b2d6dba246abd696bc6f2cb8b30032ed4fb56";
   };
 
+  inputs.securestring-src = {
+    type = "github";
+    owner = "dnet";
+    repo = "pysecstr";
+    rev = "5d143cffd144378e8d50710de6bc05659f8645fd";
+    flake = false;
+  };
   inputs.androsphinx-src = {
     type = "github";
     owner = "dnet";
@@ -43,11 +50,12 @@
   };
 
   outputs = { self, nixpkgs, androsphinx-src, libsphinx-src, pwdsphinx-src
-    , hello-src, gnulib-src }:
+    , hello-src, gnulib-src, securestring-src }:
     let
 
       # Generate a user-friendly version numer.
       version = builtins.substring 0 8 hello-src.lastModifiedDate;
+      securestring-version = builtins.substring 0 8 securestring-src.rev;
       pwdsphinx-version = "0.5";
       libsphinx-version = builtins.substring 0 8 libsphinx-src.rev;
 
@@ -103,9 +111,10 @@
             version = "0.7.5";
             sha256 = "0vlcvx3rrhp72fbb6kl1rj51cwpjknj2d1xasmmsfif95iwi026p";
           };
-          securestring = callPackage ./pkgs/SecureString {
-            version = "0.2";
-            sha256 = "119x40m9xg685xrc2k1qq1wkf36ig7dy48ln3ypiqws1r50z6ck4";
+          securestring = callPackage ./pkgs/securestring {
+            version = securestring-version;
+            src = securestring-src;
+            #sha256 = "119x40m9xg685xrc2k1qq1wkf36ig7dy48ln3ypiqws1r50z6ck4";
           };
           libsphinx = callPackage ./pkgs/libsphinx {
             pkgs = final.pkgs;
