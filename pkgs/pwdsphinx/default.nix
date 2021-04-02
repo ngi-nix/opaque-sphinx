@@ -1,5 +1,4 @@
-{ pkgs, buildPythonPackage, src, version, libsphinx, pysodium, securestring }:
-with pkgs;
+{ version, src, buildPythonPackage, libsphinx, pysodium, securestring, stdenv }:
 
 buildPythonPackage rec {
   pname = "pwdsphinx";

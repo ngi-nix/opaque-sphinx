@@ -1,9 +1,7 @@
-{ version, sha256, stdenv, lib, buildPythonPackage, fetchPypi, libsodium }:
+{ version, src, stdenv, lib, buildPythonPackage, libsodium }:
 buildPythonPackage rec {
   pname = "pysodium";
-  inherit version;
-
-  src = fetchPypi { inherit pname version sha256; };
+  inherit version src;
 
   propagatedBuildInputs = [ libsodium ];
 

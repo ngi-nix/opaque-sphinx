@@ -1,5 +1,4 @@
-{ pkgs, src, version }:
-with pkgs;
+{ version, src, stdenv, pkgconf, libsodium }:
 let standaloneBinaries = "2pass challenge respond derive";
 in stdenv.mkDerivation {
   inherit src version;

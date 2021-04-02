@@ -27,10 +27,9 @@
     type = "github";
     owner = "dnet";
     repo = "androsphinx";
-    rev = "0bf34e1a4ff6a8c2dbb9c66c64b2f7381cef173f";
+    rev = "afcab7478357904d323a70a87d2037f7f56fb2f9";
     flake = false;
   };
-
   inputs.libsphinx-src = {
     type = "github";
     owner = "stef";
@@ -110,10 +109,8 @@
               "sed -i 's|#!/bin/bash|#!${pkgs.bash}/bin/bash|' $(pwd)/build/tools/make_standalone_toolchain.py ";
           });
 
-          # Use upstream src from nixpkgs.
-          py3Pkgs = final.pkgs.python3.pkgs;
-          buildPythonPackage = py3Pkgs.buildPythonPackage;
-          fetchPypi = py3Pkgs.fetchPypi;
+          buildPythonPackage = python3.pkgs.buildPythonPackage;
+
           libsodium-src = libsodium.src;
           pysodium = callPackage ./pkgs/pysodium {
             version = pysodium-version;
@@ -125,14 +122,12 @@
             #sha256 = "119x40m9xg685xrc2k1qq1wkf36ig7dy48ln3ypiqws1r50z6ck4";
           };
           libsphinx = callPackage ./pkgs/libsphinx {
-            pkgs = final.pkgs;
-            src = libsphinx-src;
             version = libsphinx-version;
+            src = libsphinx-src;
           };
           pwdsphinx = callPackage ./pkgs/pwdsphinx {
-            pkgs = final.pkgs;
-            src = pwdsphinx-src;
             version = pwdsphinx-version;
+            src = pwdsphinx-src;
           };
 
           androidSystem = androidSystemByNixSystem.${system};
@@ -150,13 +145,13 @@
             buildPhase = ''
               export ANDROID_NDK_HOME=${ndk}/libexec/android-sdk/ndk-bundle
               export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/${androidSystem}/bin:$PATH
+              # Do not use the git submodules.
               rm -rf libsodium libsphinx
               tar -xzf ${libsodium-src} && mv ./libsodium-* libsodium
               cp -r ${libsphinx-src} ./libsphinx
               chmod -R +w ./libsphinx
               sh ./build-libsphinx.sh
             '';
-            # todo: no shrink executables?
 
             installPhase = ''
               mkdir $out
@@ -207,8 +202,11 @@
       devShell = forAllSystems (system:
         with nixpkgsFor.${system};
         mkShell {
-          buildInputs = [ pysodium securestring ];
-          shellHook = "";
+          buildInputs =
+            [ pwdsphinx openssl sdk.androidsdk androsphinx qrencode ];
+          shellHook = ''
+            export DEBUG_APK=${androsphinx}/app-debug.apk
+          '';
         });
 
       # Provide some binary packages for selected system types.
