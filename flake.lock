@@ -3,17 +3,17 @@
     "androsphinx-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1615142321,
-        "narHash": "sha256-JbSlwPlqVZEuY4AlrVOOwXjEoD27juQottVKGPJ+gkg=",
+        "lastModified": 1616793920,
+        "narHash": "sha256-CERZgW5BSxkExJq7juoUmGlUp5fSUhUOmF+xo3xW1Nc=",
         "owner": "dnet",
         "repo": "androsphinx",
-        "rev": "0bf34e1a4ff6a8c2dbb9c66c64b2f7381cef173f",
+        "rev": "afcab7478357904d323a70a87d2037f7f56fb2f9",
         "type": "github"
       },
       "original": {
         "owner": "dnet",
         "repo": "androsphinx",
-        "rev": "0bf34e1a4ff6a8c2dbb9c66c64b2f7381cef173f",
+        "rev": "afcab7478357904d323a70a87d2037f7f56fb2f9",
         "type": "github"
       }
     },
@@ -82,13 +82,85 @@
         "type": "github"
       }
     },
+    "pwdsphinx-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1617138701,
+        "narHash": "sha256-GoFA+rjNih6XMjChYNjqvoGWVWPSGBz43bhlQAdW0Zw=",
+        "owner": "stef",
+        "repo": "pwdsphinx",
+        "rev": "c29b9a259c21122dadb4e608d9d8aac8d8bc8a85",
+        "type": "github"
+      },
+      "original": {
+        "owner": "stef",
+        "repo": "pwdsphinx",
+        "rev": "c29b9a259c21122dadb4e608d9d8aac8d8bc8a85",
+        "type": "github"
+      }
+    },
+    "pysodium-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1612489197,
+        "narHash": "sha256-/PlIGIn1eFcv6EHwoYugwb1Myg2PA34S4dBcvUjEZBg=",
+        "owner": "stef",
+        "repo": "pysodium",
+        "rev": "3ffe86a4a2c731a993daac4dc142827201519f03",
+        "type": "github"
+      },
+      "original": {
+        "owner": "stef",
+        "repo": "pysodium",
+        "rev": "3ffe86a4a2c731a993daac4dc142827201519f03",
+        "type": "github"
+      }
+    },
+    "qrcodegen-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1583434848,
+        "narHash": "sha256-FNPBrxB+jltI4lTvxPTxPq6ck5W5Z6xMSm8DZdPWCUc=",
+        "owner": "nayuki",
+        "repo": "QR-Code-generator",
+        "rev": "71c75cfeb0f06788ebc43a39b704c39fcf5eba7c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nayuki",
+        "repo": "QR-Code-generator",
+        "rev": "71c75cfeb0f06788ebc43a39b704c39fcf5eba7c",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "androsphinx-src": "androsphinx-src",
         "gnulib-src": "gnulib-src",
         "hello-src": "hello-src",
         "libsphinx-src": "libsphinx-src",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "pwdsphinx-src": "pwdsphinx-src",
+        "pysodium-src": "pysodium-src",
+        "qrcodegen-src": "qrcodegen-src",
+        "securestring-src": "securestring-src"
+      }
+    },
+    "securestring-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1498585553,
+        "narHash": "sha256-FV5NUPberA5nqHad8IwkQLMldT1DPqTGpqOwgQ2zSdI=",
+        "owner": "dnet",
+        "repo": "pysecstr",
+        "rev": "5d143cffd144378e8d50710de6bc05659f8645fd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "dnet",
+        "repo": "pysecstr",
+        "rev": "5d143cffd144378e8d50710de6bc05659f8645fd",
+        "type": "github"
       }
     }
   },

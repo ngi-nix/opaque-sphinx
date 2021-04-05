@@ -23,6 +23,13 @@
     rev = "3ffe86a4a2c731a993daac4dc142827201519f03";
     flake = false;
   };
+  inputs.qrcodegen-src = {
+    type = "github";
+    owner = "nayuki";
+    repo = "QR-Code-generator";
+    rev = "71c75cfeb0f06788ebc43a39b704c39fcf5eba7c";
+    flake = false;
+  };
   inputs.androsphinx-src = {
     type = "github";
     owner = "dnet";
@@ -41,7 +48,7 @@
     type = "github";
     owner = "stef";
     repo = "pwdsphinx";
-    rev = "b0518878dc31f27d555becb9e5ed8056564da11d";
+    rev = "c29b9a259c21122dadb4e608d9d8aac8d8bc8a85";
     flake = false;
   };
 
@@ -56,15 +63,18 @@
   };
 
   outputs = { self, nixpkgs, securestring-src, pysodium-src, androsphinx-src
-    , libsphinx-src, pwdsphinx-src, hello-src, gnulib-src }:
+    , libsphinx-src, pwdsphinx-src, qrcodegen-src, hello-src, gnulib-src }:
     let
 
       getVersion = input: builtins.substring 0 7 input.rev;
-      version = builtins.substring 0 8 hello-src.lastModifiedDate;
+      version =
+        builtins.substring 0 8 hello-src.lastModifiedDate; # todo: remove
       securestring-version = getVersion securestring-src;
       pysodium-version = getVersion pysodium-src;
-      pwdsphinx-version = "0.5";
+      pwdsphinx-version = getVersion pwdsphinx-src;
       libsphinx-version = getVersion libsphinx-src;
+      qrcodegen-version = getVersion qrcodegen-src;
+      androsphinx-version = getVersion androsphinx-src;
 
       # System types to support.
       supportedSystems = [ "x86_64-linux" ];
@@ -110,6 +120,9 @@
           });
 
           buildPythonPackage = python3.pkgs.buildPythonPackage;
+          zxcvbn = python3.pkgs.zxcvbn;
+          androidSystem = androidSystemByNixSystem.${system};
+          buildGradle = callPackage ./gradle-env.nix { };
 
           libsodium-src = libsodium.src;
           pysodium = callPackage ./pkgs/pysodium {
@@ -119,46 +132,53 @@
           securestring = callPackage ./pkgs/securestring {
             version = securestring-version;
             src = securestring-src;
-            #sha256 = "119x40m9xg685xrc2k1qq1wkf36ig7dy48ln3ypiqws1r50z6ck4";
           };
           libsphinx = callPackage ./pkgs/libsphinx {
             version = libsphinx-version;
             src = libsphinx-src;
           };
+          qrcodegen = callPackage ./pkgs/qrcodegen {
+            version = qrcodegen-version;
+            src = qrcodegen-src;
+          };
           pwdsphinx = callPackage ./pkgs/pwdsphinx {
             version = pwdsphinx-version;
             src = pwdsphinx-src;
+            zxcvbn = zxcvbn;
+            qrcodegen = qrcodegen;
           };
 
-          androidSystem = androidSystemByNixSystem.${system};
-          buildGradle = callPackage ./gradle-env.nix { };
-
-          androsphinxCryptoLibs = stdenvNoCC.mkDerivation {
-            name = "androsphinxCryptoLibs";
+          androsphinxCryptoLibs = callPackage ./pkgs/androsphinx/libs.nix {
+            version = androsphinx-version;
             src = androsphinx-src;
-            buildInputs = [ pkgconf ];
-
-            patches = [ ./build-libsphinx.sh.patch ];
-
-            dontConfigure = true;
-
-            buildPhase = ''
-              export ANDROID_NDK_HOME=${ndk}/libexec/android-sdk/ndk-bundle
-              export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/${androidSystem}/bin:$PATH
-              # Do not use the git submodules.
-              rm -rf libsodium libsphinx
-              tar -xzf ${libsodium-src} && mv ./libsodium-* libsodium
-              cp -r ${libsphinx-src} ./libsphinx
-              chmod -R +w ./libsphinx
-              sh ./build-libsphinx.sh
-            '';
-
-            installPhase = ''
-              mkdir $out
-              cp -r app/src/main/jniLibs $out
-              ls -alh $out
-            '';
+            inherit libsphinx-src;
           };
+          #androsphinxCryptoLibs' = stdenvNoCC.mkDerivation {
+          #  name = "androsphinxCryptoLibs";
+          #  src = androsphinx-src;
+          #  buildInputs = [ pkgconf ];
+
+          #  patches = [ ./build-libsphinx.sh.patch ];
+
+          #  dontConfigure = true;
+
+          #  buildPhase = ''
+          #    export ANDROID_NDK_HOME=${ndk}/libexec/android-sdk/ndk-bundle
+          #    export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/${androidSystem}/bin:$PATH
+          #    # Do not use the git submodules.
+          #    rm -rf libsodium libsphinx
+          #    tar -xzf ${libsodium-src} && mv ./libsodium-* libsodium
+          #    cp -r ${libsphinx-src} ./libsphinx
+          #    chmod -R +w ./libsphinx
+          #    sh ./build-libsphinx.sh
+          #  '';
+
+          #  installPhase = ''
+          #    mkdir $out
+          #    cp -r app/src/main/jniLibs $out
+          #    ls -alh $out
+          #  '';
+          #};
           # gradle tasks:
           # check - Runs all checks.
           # test - Run unit tests for all variants.
@@ -211,24 +231,23 @@
 
       # Provide some binary packages for selected system types.
       packages = forAllSystems (system: {
-        inherit (nixpkgsFor.${system})
-          hello androsphinxCryptoLibs androsphinx pysodium securestring
-          libsphinx pwdsphinx;
+        inherit (nixpkgsFor.${system}) pwdsphinx androsphinx libsphinx;
       });
 
       # The default package for 'nix build'. This makes sense if the
       # flake provides only one package or there is a clear "main"
       # package.
-      defaultPackage = forAllSystems (system: self.packages.${system}.hello);
+      defaultPackage =
+        forAllSystems (system: self.packages.${system}.androsphinx);
 
-      # A NixOS module, if applicable (e.g. if the package provides a system service).
-      nixosModules.hello = { pkgs, ... }: {
-        nixpkgs.overlays = [ self.overlay ];
+      ## A NixOS module, if applicable (e.g. if the package provides a system service).
+      #nixosModules.hello = { pkgs, ... }: {
+      #  nixpkgs.overlays = [ self.overlay ];
 
-        environment.systemPackages = [ pkgs.hello ];
+      #  environment.systemPackages = [ pkgs.hello ];
 
-        #systemd.services = { ... };
-      };
+      #  #systemd.services = { ... };
+      #};
 
       # Tests run by 'nix flake check' and by Hydra.
       checks = forAllSystems (system: {

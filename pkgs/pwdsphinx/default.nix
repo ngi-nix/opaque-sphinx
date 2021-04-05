@@ -1,20 +1,31 @@
-{ version, src, buildPythonPackage, libsphinx, pysodium, securestring, stdenv }:
+{ version, src, buildPythonPackage, libsphinx, pysodium, securestring, qrcodegen
+, zxcvbn, stdenv, crudini }:
 
 buildPythonPackage rec {
   pname = "pwdsphinx";
   inherit src version;
 
-  propagatedBuildInputs = [ libsphinx pysodium securestring ];
+  propagatedBuildInputs = [ libsphinx pysodium securestring qrcodegen zxcvbn ];
 
   postPatch = let soext = stdenv.hostPlatform.extensions.sharedLibrary;
   in ''
     substituteInPlace pwdsphinx/sphinxlib.py \
       --replace "ctypes.util.find_library('sphinx') or ctypes.util.find_library('libsphinx')" "'${libsphinx}/lib/libsphinx${soext}'"
 
-    substituteInPlace pwdsphinx/sphinx.py \
-      --replace "def main(params):" "def main(params=sys.argv):"
+    substituteInPlace setup.py \
+      --replace "zxcvbn-python" "zxcvbn"
   '';
 
-  # todo: add checks with self-signed cert
-  doCheck = false;
+  checkInputs = [ crudini ];
+  preCheck = ''
+    # The checks try to read some values from the sphinx.cfg file but don't use
+    # them. We can use some dummy values.
+    FILE=sphinx.cfg
+    cp sphinx.cfg_sample $FILE
+    for SECTION in client server ; do
+      for PREFIX in ssl_key ssl_cert ; do
+        crudini --set $FILE $SECTION $PREFIX ./''${PREFIX}.doesnt-exist.pem
+      done
+    done
+  '';
 }
