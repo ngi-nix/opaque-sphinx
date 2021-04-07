@@ -54,8 +54,6 @@ Both clients (cli & app) will be able to access the same credentials.
 
 ## Server setup
 
-# todo: maybe use tilde for ssl cer/key files (client + server)
-
 ```bash
 # Install & activate all dependencies.
 $ nix develop
@@ -176,4 +174,3 @@ You should receive the same password as the CLI client.
 
 * https://github.com/dnet/androsphinx/issues/8
 * https://github.com/dnet/androsphinx/pull/5
-nixpkgs
