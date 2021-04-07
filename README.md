@@ -58,7 +58,7 @@ Both clients (cli & app) will be able to access the same credentials.
 # Install & activate all dependencies.
 $ nix develop
 # Go to the test folder.
-$ mkdir -p ~/sphinx-test && cd ~/sphinx-test
+$ rm -rf ~/sphinx-test ; mkdir ~/sphinx-test && cd ~/sphinx-test
 
 # Create an SSL certificate (only do this once).
 $ openssl req -nodes -x509 -sha256 -newkey rsa:4096 -keyout ssl_key.pem -out ssl_cert.pem -days 365 -batch
@@ -137,7 +137,10 @@ $ adb devices
 
 # Install the custom SSL certificate.
 adb push ssl_cert.pem mnt/sdcard/ssl_cert.pem # or wherever else you can upload to the phone
-# In your phone, open Settings -> Security -> "Install [certificates] from device memory/SD card" (or similar) -> Choose the certificate file and install it.
+
+# In your phone, open Settings -> Security -> "Install [certificates] from
+# device memory/SD card" (or similar) -> Choose the certificate file and install
+# it.
 
 # Install the app. (The 'uninstall' command will fail at the first time, of
 # course).
@@ -149,7 +152,7 @@ $ adb uninstall org.hsbp.androsphinx ; adb install $DEBUG_APK
 $ ip a
 $ export IP_ADDR=X.X.X.X # 192.168....
 
-# Launch the app in the phone, press the 'Settings' icon and press 'Scan from
+# Launch the androsphinx app in the phone, press the 'Settings' icon and press 'Scan from
 # QR code'. Generate the QR code on the dev machine (make sure the $IP_ADDR is set).
 (printf '\x01' ; cat ./datadir/masterkey ; printf '\x09\x33%s' "$IP_ADDR") | qrencode -8 -t ANSI256
 # (Now scan the generated code with the phone.)
@@ -171,6 +174,7 @@ You should receive the same password as the CLI client.
 * https://github.com/stef/pwdsphinx/issues/9
 * https://github.com/stef/pwdsphinx/issues/10
 * https://github.com/stef/pwdsphinx/issues/13
+* https://github.com/stef/pwdsphinx/pull/14
 
 * https://github.com/dnet/androsphinx/issues/8
 * https://github.com/dnet/androsphinx/pull/5
