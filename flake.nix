@@ -101,8 +101,7 @@
           buildPythonPackage = python3.pkgs.buildPythonPackage;
           zxcvbn = python3.pkgs.zxcvbn;
           androidSystem = androidSystemByNixSystem.${system};
-          buildGradle = callPackage ./gradle-env.nix { };
-          libsodium-src = libsodium.src;
+          libsodium-src = libsodium.src; # use nixpkgs
 
           pysodium = callPackage ./pkgs/pysodium {
             version = pysodium-version;
@@ -154,15 +153,11 @@
         inherit (nixpkgsFor.${system}) pwdsphinx androsphinx libsphinx;
       });
 
-      # The default package for 'nix build'. This makes sense if the
-      # flake provides only one package or there is a clear "main"
-      # package.
       defaultPackage =
         forAllSystems (system: self.packages.${system}.androsphinx);
 
       # Tests run by 'nix flake check' and by Hydra.
       checks = forAllSystems (system: {
-        #inherit (self.packages.${system}) androsphinx;
 
         androsphinxTest = with nixpkgsFor.${system};
           stdenv.mkDerivation {
@@ -215,13 +210,12 @@
               ls ssl_cert.pem ssl_key.pem # make sure these files exist.
 
               # Configure client & server.
-              export HOME=.
               cat <<EOF > sphinx.cfg
               [client]
               verbose = False
               address = 127.0.0.1
               port = 2355
-              datadir = ~/sphinx-test/datadir
+              datadir = ./datadir
               ssl_key = ./ssl_key.pem
               ssl_cert = ./ssl_cert.pem
 
@@ -229,7 +223,7 @@
               verbose = False
               address = 0.0.0.0
               port = 2355
-              datadir = ~/sphinx-test/datadir
+              datadir = ./datadir
               ssl_key = ./ssl_key.pem
               ssl_cert = ./ssl_cert.pem
               EOF
