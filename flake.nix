@@ -47,7 +47,7 @@
     type = "github";
     owner = "stef";
     repo = "pwdsphinx";
-    rev = "c29b9a259c21122dadb4e608d9d8aac8d8bc8a85";
+    rev = "f7acc8c9f4e01d44ff3ad65d50e96be337741584";
     flake = false;
   };
 

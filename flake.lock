@@ -53,17 +53,17 @@
     "pwdsphinx-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1617138701,
-        "narHash": "sha256-GoFA+rjNih6XMjChYNjqvoGWVWPSGBz43bhlQAdW0Zw=",
+        "lastModified": 1617792842,
+        "narHash": "sha256-qFPqF6T1R0Hn8NHAbX8Ak9nhHtkxeKwfopd0cDkAGZE=",
         "owner": "stef",
         "repo": "pwdsphinx",
-        "rev": "c29b9a259c21122dadb4e608d9d8aac8d8bc8a85",
+        "rev": "f7acc8c9f4e01d44ff3ad65d50e96be337741584",
         "type": "github"
       },
       "original": {
         "owner": "stef",
         "repo": "pwdsphinx",
-        "rev": "c29b9a259c21122dadb4e608d9d8aac8d8bc8a85",
+        "rev": "f7acc8c9f4e01d44ff3ad65d50e96be337741584",
         "type": "github"
       }
     },
