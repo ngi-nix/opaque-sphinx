@@ -1,12 +1,11 @@
 {
-  description = "(insert short project description here)";
+  description = "Androsphinx - a SPHINX app for Android.";
 
-  # nixpkgs-unstable-2021-01-27
   inputs.nixpkgs = {
     type = "github";
     owner = "NixOS";
     repo = "nixpkgs";
-    ref = "652b2d6dba246abd696bc6f2cb8b30032ed4fb56";
+    ref = "3cadb8b32209d13714b53317ca96ccbd943b6e45";
   };
 
   inputs.securestring-src = {
@@ -52,23 +51,11 @@
     flake = false;
   };
 
-  # Upstream source tree(s).
-  inputs.hello-src = {
-    url = "git+https://git.savannah.gnu.org/git/hello.git";
-    flake = false;
-  };
-  inputs.gnulib-src = {
-    url = "git+https://git.savannah.gnu.org/git/gnulib.git";
-    flake = false;
-  };
-
   outputs = { self, nixpkgs, securestring-src, pysodium-src, androsphinx-src
-    , libsphinx-src, pwdsphinx-src, qrcodegen-src, hello-src, gnulib-src }:
+    , libsphinx-src, pwdsphinx-src, qrcodegen-src }:
     let
 
       getVersion = input: builtins.substring 0 7 input.rev;
-      version =
-        builtins.substring 0 8 hello-src.lastModifiedDate; # todo: remove
       securestring-version = getVersion securestring-src;
       pysodium-version = getVersion pysodium-src;
       pwdsphinx-version = getVersion pwdsphinx-src;
@@ -106,25 +93,17 @@
           sdk = pkgs.androidenv.composeAndroidPackages {
             buildToolsVersions = [ "28.0.3" "29.0.3" ];
             platformVersions = [ "29" ];
-            abiVersions =
-              [ "x86" "x86_64" "armeabi-v7a" "armeabi-v8a" ]; # todo: v8a
+            abiVersions = [ "x86" "x86_64" "armeabi-v7a" "armeabi-v8a" ];
             includeNDK = true;
             ndkVersion = "22.0.7026061";
           };
-          # Todo: use nixpkgs with merged PR:
-          # https://github.com/NixOS/nixpkgs/pull/115229
-          # and replace ndk by snd.ndk-bundle;
-          ndk = sdk.ndk-bundle.overrideAttrs (oldAttrs: rec {
-            postPatch =
-              "sed -i 's|#!/bin/bash|#!${pkgs.bash}/bin/bash|' $(pwd)/build/tools/make_standalone_toolchain.py ";
-          });
-
+          ndk = sdk.ndk-bundle;
           buildPythonPackage = python3.pkgs.buildPythonPackage;
           zxcvbn = python3.pkgs.zxcvbn;
           androidSystem = androidSystemByNixSystem.${system};
           buildGradle = callPackage ./gradle-env.nix { };
-
           libsodium-src = libsodium.src;
+
           pysodium = callPackage ./pkgs/pysodium {
             version = pysodium-version;
             src = pysodium-src;
@@ -153,69 +132,10 @@
             src = androsphinx-src;
             inherit libsphinx-src;
           };
-          #androsphinxCryptoLibs' = stdenvNoCC.mkDerivation {
-          #  name = "androsphinxCryptoLibs";
-          #  src = androsphinx-src;
-          #  buildInputs = [ pkgconf ];
-
-          #  patches = [ ./build-libsphinx.sh.patch ];
-
-          #  dontConfigure = true;
-
-          #  buildPhase = ''
-          #    export ANDROID_NDK_HOME=${ndk}/libexec/android-sdk/ndk-bundle
-          #    export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/${androidSystem}/bin:$PATH
-          #    # Do not use the git submodules.
-          #    rm -rf libsodium libsphinx
-          #    tar -xzf ${libsodium-src} && mv ./libsodium-* libsodium
-          #    cp -r ${libsphinx-src} ./libsphinx
-          #    chmod -R +w ./libsphinx
-          #    sh ./build-libsphinx.sh
-          #  '';
-
-          #  installPhase = ''
-          #    mkdir $out
-          #    cp -r app/src/main/jniLibs $out
-          #    ls -alh $out
-          #  '';
-          #};
-          # gradle tasks:
-          # check - Runs all checks.
-          # test - Run unit tests for all variants.
-          # testDebugUnitTest - Run unit tests for the debug build.
-          # testReleaseUnitTest - Run unit tests for the release build.
-          androsphinx =
-            callPackage ./pkgs/androsphinx { src = androsphinx-src; };
-
-          hello = with final;
-            stdenv.mkDerivation rec {
-              name = "hello-${version}";
-
-              src = hello-src;
-
-              buildInputs = [
-                androsphinxCryptoLibs
-                autoconf
-                automake
-                gettext
-                gnulib
-                perl
-                gperf
-                texinfo
-                help2man
-              ];
-
-              preConfigure = ''
-                mkdir -p .git # force BUILD_FROM_GIT
-                ./bootstrap --gnulib-srcdir=${gnulib-src} --no-git --skip-po
-              '';
-
-              meta = {
-                homepage = "https://www.gnu.org/software/hello/";
-                description = "A program to show a familiar, friendly greeting";
-              };
-            };
-
+          androsphinx = callPackage ./pkgs/androsphinx {
+            version = androsphinx-version;
+            src = androsphinx-src;
+          };
         };
 
       # Provide a nix-shell env to work with.
@@ -240,51 +160,100 @@
       defaultPackage =
         forAllSystems (system: self.packages.${system}.androsphinx);
 
-      ## A NixOS module, if applicable (e.g. if the package provides a system service).
-      #nixosModules.hello = { pkgs, ... }: {
-      #  nixpkgs.overlays = [ self.overlay ];
-
-      #  environment.systemPackages = [ pkgs.hello ];
-
-      #  #systemd.services = { ... };
-      #};
-
       # Tests run by 'nix flake check' and by Hydra.
       checks = forAllSystems (system: {
-        inherit (self.packages.${system}) hello;
+        #inherit (self.packages.${system}) androsphinx;
 
-        # Additional tests, if applicable.
-        test = with nixpkgsFor.${system};
+        androsphinxTest = with nixpkgsFor.${system};
           stdenv.mkDerivation {
-            name = "hello-test-${version}";
+            name = "androsphinx-test-${androsphinx-version}";
 
-            buildInputs = [ hello ];
+            dontUnpack = true;
 
-            unpackPhase = "true";
+            buildInputs = [ androsphinx unzip ];
 
             buildPhase = ''
-              echo 'running some integration tests'
-              [[ $(hello) = 'Hello, world!' ]]
+              # Check that the apks are available.
+              NUMBER_OF_GENERATED_APK_FILES=$(find ${androsphinx} -name '*.apk' -print | wc -l)
+              NUMBER_OF_EXPECTED_APK_FILES=2 # debug + release
+              if [[ "$NUMBER_OF_GENERATED_APK_FILES" != "$NUMBER_OF_EXPECTED_APK_FILES" ]] ; then
+                echo "Could not find all expected *.apk files!"
+                exit 1
+              fi
+
+              # Check that the apk contains the crypto libs.
+              mkdir extracted
+              cp ${androsphinx}/app-debug.apk ./extracted
+              cd extracted
+              unzip *.apk
+              NUMBER_OF_SHIPPED_LIBRARY_FILES=$(ls -1 lib/*/{libsodium,libsphinx}.so | wc -l)
+              NUMBER_OF_EXPECTED_LIBRARY_FILES=8 # 2 libs for each of the 4 archs
+              if [[ "$NUMBER_OF_SHIPPED_LIBRARY_FILES" != "$NUMBER_OF_EXPECTED_LIBRARY_FILES" ]] ; then
+                echo "Could not find all expected *.so files in the APK!"
+                exit 1
+              fi
             '';
 
-            installPhase = "mkdir -p $out";
+            installPhase = ''
+              mkdir $out
+            '';
           };
 
-        # A VM test of the NixOS module.
-        vmTest = with import (nixpkgs + "/nixos/lib/testing-python.nix") {
-          inherit system;
-        };
+        pwdsphinxTest = with nixpkgsFor.${system};
+          stdenv.mkDerivation {
+            name = "pwdsphinx-test-${pwdsphinx-version}";
 
-          makeTest {
-            nodes = {
-              client = { ... }: { imports = [ self.nixosModules.hello ]; };
-            };
+            dontUnpack = true;
 
-            testScript = ''
-              start_all()
-              client.wait_for_unit("multi-user.target")
-              client.succeed("hello")
+            buildInputs = [ pwdsphinx openssl ];
+
+            buildPhase = ''
+
+              # Create custom certificate.
+              openssl req -nodes -x509 -sha256 -newkey rsa:4096 \
+                -keyout ssl_key.pem -out ssl_cert.pem -days 365 -batch
+              ls ssl_cert.pem ssl_key.pem # make sure these files exist.
+
+              # Configure client & server.
+              export HOME=.
+              cat <<EOF > sphinx.cfg
+              [client]
+              verbose = False
+              address = 127.0.0.1
+              port = 2355
+              datadir = ~/sphinx-test/datadir
+              ssl_key = ./ssl_key.pem
+              ssl_cert = ./ssl_cert.pem
+
+              [server]
+              verbose = False
+              address = 0.0.0.0
+              port = 2355
+              datadir = ~/sphinx-test/datadir
+              ssl_key = ./ssl_key.pem
+              ssl_cert = ./ssl_cert.pem
+              EOF
+
+              # Run server in background.
+              oracle 2>&1 > oracle.log &
+
+              # Access server.
+              MASTER_PASSWORD="l@kjq34pseudorandomrjaop0Pq3y45980A;hdf"
+              sphinx init
+              printf $MASTER_PASSWORD | sphinx create user site uld 10 > password1
+              printf $MASTER_PASSWORD | sphinx get user site > password2
+
+              # Make sure the password can be retrieved.
+              diff password1 password2
+
+              # Kill the server.
+              kill %1
             '';
+
+            installPhase = ''
+              mkdir $out
+            '';
+
           };
       });
 

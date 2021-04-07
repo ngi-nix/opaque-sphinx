@@ -1,10 +1,9 @@
-{ src, androsphinxCryptoLibs, sdk, callPackage }:
+{ version, src, androsphinxCryptoLibs, sdk, callPackage }:
 let buildGradle = callPackage ./gradle-env.nix { };
 in buildGradle {
-  # todo: add version
-  envSpec = ./gradle-env.json;
+  inherit version src;
 
-  inherit src;
+  envSpec = ./gradle-env.json; # todo: updaate gradle2nix?
 
   preBuild = ''
     # Copy previously compiled *.so files to make them available in the app.
@@ -16,13 +15,10 @@ in buildGradle {
     printf "\nandroid.aapt2FromMavenOverride=${sdk.androidsdk}/libexec/android-sdk/build-tools/29.0.3/aapt2" >> gradle.properties
   '';
 
-  #gradleFlags = [ "check" "test" ];
-  gradleFlags = [ "build" ];
+  gradleFlags = [ "check" "lint" "test" "build" ];
 
   installPhase = ''
     mkdir -p $out
-    ls -alR app/build
-    # cp -r app/build/install/myproject $out
     find . -name '*.apk' -exec cp {} $out \;
   '';
 }

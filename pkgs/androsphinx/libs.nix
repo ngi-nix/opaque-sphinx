@@ -1,8 +1,10 @@
-{ version, src, libsodiumSrc, libsphinxSrc, stdenv, pkgconf, ndk, androidSystem }:
-
+{ version, src, libsodium-src, libsphinx-src, stdenvNoCC, pkgconf, ndk
+, androidSystem }:
+# Use stdenvNoCC to not make GCC interfere with the Android compilers.
 stdenvNoCC.mkDerivation {
   name = "androsphinxCryptoLibs-${version}";
-  src = src
+  inherit version src;
+
   buildInputs = [ pkgconf ];
 
   patches = [ ./build-libsphinx.sh.patch ];
@@ -20,9 +22,12 @@ stdenvNoCC.mkDerivation {
     sh ./build-libsphinx.sh
   '';
 
+  # This derivation is actually not needed separately from androsphinx. The
+  # library files could be compiled before compiling (gradle) the app.
+  # However, for debugging & rebuilding, it is quite convenient to build the
+  # libraries separately.
   installPhase = ''
     mkdir $out
     cp -r app/src/main/jniLibs $out
-    ls -alh $out
   '';
 }
