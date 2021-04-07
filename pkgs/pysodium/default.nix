@@ -1,4 +1,4 @@
-{ version, src, stdenv, lib, buildPythonPackage, libsodium }:
+{ version, src, stdenv, buildPythonPackage, libsodium }:
 buildPythonPackage rec {
   pname = "pysodium";
   inherit version src;
@@ -12,11 +12,4 @@ buildPythonPackage rec {
     substituteInPlace ./pysodium/__init__.py \
       --replace "ctypes.util.find_library('sodium') or ctypes.util.find_library('libsodium')" "'${libsodium}/lib/libsodium${soext}'"
   '';
-
-  meta = with lib; {
-    description =
-      "A wrapper for libsodium providing high level crypto primitives ";
-    homepage = "https://github.com/stef/pysodium";
-    license = licenses.bsd2;
-  };
 }
