@@ -1,5 +1,6 @@
 {
-  description = "Androsphinx - a SPHINX app for Android.";
+  description =
+    "SPHINX - A password Store that Perfectly Hides from Itself (No Xaggeration)";
 
   inputs.nixpkgs = {
     type = "github";
@@ -7,7 +8,10 @@
     repo = "nixpkgs";
     ref = "3cadb8b32209d13714b53317ca96ccbd943b6e45";
   };
-
+  inputs.bearssl-src = {
+    url = "git+https://www.bearssl.org/git/BearSSL";
+    flake = false;
+  };
   inputs.securestring-src = {
     type = "github";
     owner = "dnet";
@@ -50,9 +54,24 @@
     rev = "f7acc8c9f4e01d44ff3ad65d50e96be337741584";
     flake = false;
   };
+  inputs.zigtoml-src = {
+    type = "github";
+    owner = "aeronavery";
+    repo = "zig-toml";
+    rev = "299e2d9f87816a5ce374853e03f13176b821b81e";
+    flake = false;
+  };
+  inputs.zphinxzerver-src = {
+    type = "github";
+    owner = "stef";
+    repo = "zphinx-zerver";
+    rev = "5e4b7af350bed33ae52de17e11b2d65dc4edc691";
+    flake = false;
+  };
 
-  outputs = { self, nixpkgs, securestring-src, pysodium-src, androsphinx-src
-    , libsphinx-src, pwdsphinx-src, qrcodegen-src }:
+  outputs = { self, nixpkgs, bearssl-src, securestring-src, pysodium-src
+    , androsphinx-src, libsphinx-src, pwdsphinx-src, qrcodegen-src, zigtoml-src
+    , zphinxzerver-src }:
     let
 
       getVersion = input: builtins.substring 0 7 input.rev;
@@ -62,6 +81,7 @@
       libsphinx-version = getVersion libsphinx-src;
       qrcodegen-version = getVersion qrcodegen-src;
       androsphinx-version = getVersion androsphinx-src;
+      zphinxzerver-version = getVersion zphinxzerver-src;
 
       # System types to support.
       supportedSystems = [ "x86_64-linux" ];
@@ -140,14 +160,27 @@
             version = androsphinx-version;
             src = androsphinx-src;
           };
+
+          zphinxzerver = callPackage ./pkgs/zphinxzerver {
+            pkgs = final.pkgs;
+            version = zphinxzerver-version;
+            src = zphinxzerver-src;
+            inherit bearssl-src libsphinx-src zigtoml-src;
+          };
         };
 
       # Provide a nix-shell env to work with.
       devShell = forAllSystems (system:
         with nixpkgsFor.${system};
         mkShell {
-          buildInputs =
-            [ pwdsphinx openssl sdk.androidsdk androsphinx qrencode ];
+          buildInputs = [
+            androsphinx
+            openssl
+            pwdsphinx
+            qrencode
+            sdk.androidsdk
+            zphinxzerver
+          ];
           shellHook = ''
             export DEBUG_APK=${androsphinx}/app-debug.apk
           '';
@@ -155,7 +188,8 @@
 
       # Provide some binary packages for selected system types.
       packages = forAllSystems (system: {
-        inherit (nixpkgsFor.${system}) pwdsphinx androsphinx libsphinx;
+        inherit (nixpkgsFor.${system})
+          pwdsphinx androsphinx libsphinx zphinxzerver;
       });
 
       defaultPackage =
@@ -208,10 +242,9 @@
             buildInputs = [ pwdsphinx openssl ];
 
             buildPhase = ''
-
               # Create custom certificate.
               openssl req -nodes -x509 -sha256 -newkey rsa:4096 \
-                -keyout ssl_key.pem -out ssl_cert.pem -days 365 -batch
+                -keyout ssl_key.pem -out ssl_cert.pem -batch
               ls ssl_cert.pem ssl_key.pem # make sure these files exist.
 
               # Configure client & server.
@@ -244,9 +277,6 @@
 
               # Make sure the password can be retrieved.
               diff password1 password2
-
-              # Kill the server.
-              kill %1
             '';
 
             installPhase = ''
@@ -254,6 +284,70 @@
             '';
 
           };
+        zphinxzerverTest = with nixpkgsFor.${system};
+          stdenv.mkDerivation {
+            name = "zphinxzerver-test-${pwdsphinx-version}";
+
+            dontUnpack = true;
+
+            buildInputs = [ pwdsphinx zphinxzerver openssl ];
+
+            buildPhase = ''
+              # Create custom certificate.
+              openssl ecparam -genkey -out ssl_key.pem -name secp384r1
+              openssl req -nodes -x509 -sha256 -key ssl_key.pem \
+                -out ssl_cert.pem -batch
+              ls ssl_cert.pem ssl_key.pem # make sure these files exist.
+
+              # Configure pwdsphinx client.
+              mkdir client; cd client
+              cat <<EOF > sphinx.cfg
+              [client]
+              verbose = true
+              address = 127.0.0.1
+              port = 2355
+              datadir = ../datadir
+              ssl_key = ../ssl_key.pem
+              ssl_cert = ../ssl_cert.pem
+              EOF
+              cd -
+
+              # Configure zphinxzerver. Currently, the same config file cannot
+              # be used for both the Python and the Zig implementation. See
+              # https://github.com/stef/zphinx-zerver/issues/1.
+              mkdir server; cd server
+              cat <<EOF > sphinx.cfg
+              [server]
+              verbose = true
+              address = "127.0.0.1"
+              port = 2355
+              datadir = "../datadir"
+              ssl_key = "../ssl_key.pem"
+              ssl_cert = "../ssl_cert.pem"
+              EOF
+              cd -
+
+              # Run zphinxzerver in background.
+              cd server
+              zphinxzerver-oracle 2>&1 > oracle.log &
+              cd -
+
+              # Access server through pwdsphinx client.
+              cd client
+              MASTER_PASSWORD="l@kjq34pseudorandomrjaop0Pq3y45980A;hdf"
+              sphinx init
+              printf $MASTER_PASSWORD | sphinx create user site uld 10 > password1
+              printf $MASTER_PASSWORD | sphinx get user site > password2
+              # Make sure the password can be retrieved.
+              diff password1 password2
+              cd -
+            '';
+
+            installPhase = ''
+              mkdir $out
+            '';
+          };
+
       });
 
     };

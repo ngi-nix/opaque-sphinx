@@ -17,6 +17,22 @@
         "type": "github"
       }
     },
+    "bearssl-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1611758096,
+        "narHash": "sha256-jm5WLCyQ/T2BxlPfn56G9iZyZg/RyWq4JFa8cspzkkY=",
+        "ref": "master",
+        "rev": "79b1a9996c094ff593ae50bc4edc1f349f39dd6d",
+        "revCount": 149,
+        "type": "git",
+        "url": "https://www.bearssl.org/git/BearSSL"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://www.bearssl.org/git/BearSSL"
+      }
+    },
     "libsphinx-src": {
       "flake": false,
       "locked": {
@@ -104,12 +120,15 @@
     "root": {
       "inputs": {
         "androsphinx-src": "androsphinx-src",
+        "bearssl-src": "bearssl-src",
         "libsphinx-src": "libsphinx-src",
         "nixpkgs": "nixpkgs",
         "pwdsphinx-src": "pwdsphinx-src",
         "pysodium-src": "pysodium-src",
         "qrcodegen-src": "qrcodegen-src",
-        "securestring-src": "securestring-src"
+        "securestring-src": "securestring-src",
+        "zigtoml-src": "zigtoml-src",
+        "zphinxzerver-src": "zphinxzerver-src"
       }
     },
     "securestring-src": {
@@ -126,6 +145,40 @@
         "owner": "dnet",
         "repo": "pysecstr",
         "rev": "5d143cffd144378e8d50710de6bc05659f8645fd",
+        "type": "github"
+      }
+    },
+    "zigtoml-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1605577729,
+        "narHash": "sha256-fspGKgJV8Vc0IkVzoLVB9WTwlauQKNG5I27GMPp5Qv0=",
+        "owner": "aeronavery",
+        "repo": "zig-toml",
+        "rev": "299e2d9f87816a5ce374853e03f13176b821b81e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "aeronavery",
+        "repo": "zig-toml",
+        "rev": "299e2d9f87816a5ce374853e03f13176b821b81e",
+        "type": "github"
+      }
+    },
+    "zphinxzerver-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1617326959,
+        "narHash": "sha256-CK/VHDaja01Oq/WCSrP6nKeDsd/9jE4TM8VeUgeyx6Y=",
+        "owner": "stef",
+        "repo": "zphinx-zerver",
+        "rev": "5e4b7af350bed33ae52de17e11b2d65dc4edc691",
+        "type": "github"
+      },
+      "original": {
+        "owner": "stef",
+        "repo": "zphinx-zerver",
+        "rev": "5e4b7af350bed33ae52de17e11b2d65dc4edc691",
         "type": "github"
       }
     }
