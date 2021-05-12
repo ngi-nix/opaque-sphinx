@@ -1,4 +1,5 @@
-{ version, src, stdenv, buildPythonPackage, libsodium }:
+{ pkgs, version, src }:
+with pkgs;
 buildPythonPackage rec {
   pname = "pysodium";
   inherit version src;

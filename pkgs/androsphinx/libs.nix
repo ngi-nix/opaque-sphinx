@@ -1,5 +1,5 @@
-{ version, src, libsodium-src, libsphinx-src, stdenvNoCC, pkgconf, ndk
-, androidSystem }:
+{ pkgs, version, src, libsodium-src, libsphinx-src, ndk, androidSystem }:
+with pkgs;
 # Use stdenvNoCC to not make GCC interfere with the Android compilers.
 stdenvNoCC.mkDerivation {
   name = "androsphinxCryptoLibs-${version}";

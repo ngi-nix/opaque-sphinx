@@ -146,15 +146,13 @@
           pwdsphinx = callPackage ./pkgs/pwdsphinx {
             version = pwdsphinx-version;
             src = pwdsphinx-src;
-            zxcvbn = zxcvbn;
-            qrcodegen = qrcodegen;
+            inherit libsphinx pysodium securestring qrcodegen zxcvbn;
           };
 
           androsphinxCryptoLibs = callPackage ./pkgs/androsphinx/libs.nix {
             version = androsphinx-version;
             src = androsphinx-src;
-            androidSystem = androidSystemByNixSystem.${system};
-            inherit libsphinx-src;
+            inherit libsphinx-src libsodium-src ndk androidSystem;
           };
           androsphinx = callPackage ./pkgs/androsphinx {
             version = androsphinx-version;
@@ -162,7 +160,6 @@
           };
 
           zphinxzerver = callPackage ./pkgs/zphinxzerver {
-            pkgs = final.pkgs;
             version = zphinxzerver-version;
             src = zphinxzerver-src;
             inherit bearssl-src libsphinx-src zigtoml-src;

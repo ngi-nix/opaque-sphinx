@@ -1,6 +1,6 @@
-{ version, src, buildPythonPackage, libsphinx, pysodium, securestring, qrcodegen
-, zxcvbn, stdenv, crudini }:
-
+{ pkgs, version, src, libsphinx, pysodium, securestring, qrcodegen, zxcvbn }:
+with pkgs;
+# todo: rename oracle (ando ther binaries?)
 buildPythonPackage rec {
   pname = "pwdsphinx";
   inherit src version;
