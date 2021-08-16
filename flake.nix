@@ -1,22 +1,37 @@
 {
+  # tood: equihash
   description =
     "SPHINX - A password Store that Perfectly Hides from Itself (No Xaggeration)";
 
+  inputs.androsphinx-src = {
+    type = "github";
+    owner = "dnet";
+    repo = "androsphinx";
+    rev = "afcab7478357904d323a70a87d2037f7f56fb2f9";
+    flake = false;
+  };
+  inputs.bearssl-src = {
+    url = "git+https://www.bearssl.org/git/BearSSL";
+    flake = false;
+  };
+  inputs.libsphinx-src = {
+    type = "github";
+    owner = "stef";
+    repo = "libsphinx";
+    rev = "51b0c18c94b645bd7ea3bb21aef623318e0b7939";
+    flake = false;
+  };
   inputs.nixpkgs = {
     type = "github";
     owner = "NixOS";
     repo = "nixpkgs";
     ref = "3cadb8b32209d13714b53317ca96ccbd943b6e45";
   };
-  inputs.bearssl-src = {
-    url = "git+https://www.bearssl.org/git/BearSSL";
-    flake = false;
-  };
-  inputs.securestring-src = {
+  inputs.pwdsphinx-src = {
     type = "github";
-    owner = "dnet";
-    repo = "pysecstr";
-    rev = "5d143cffd144378e8d50710de6bc05659f8645fd";
+    owner = "stef";
+    repo = "pwdsphinx";
+    rev = "f7acc8c9f4e01d44ff3ad65d50e96be337741584";
     flake = false;
   };
   inputs.pysodium-src = {
@@ -33,25 +48,11 @@
     rev = "71c75cfeb0f06788ebc43a39b704c39fcf5eba7c";
     flake = false;
   };
-  inputs.androsphinx-src = {
+  inputs.securestring-src = {
     type = "github";
     owner = "dnet";
-    repo = "androsphinx";
-    rev = "afcab7478357904d323a70a87d2037f7f56fb2f9";
-    flake = false;
-  };
-  inputs.libsphinx-src = {
-    type = "github";
-    owner = "stef";
-    repo = "libsphinx";
-    rev = "51b0c18c94b645bd7ea3bb21aef623318e0b7939";
-    flake = false;
-  };
-  inputs.pwdsphinx-src = {
-    type = "github";
-    owner = "stef";
-    repo = "pwdsphinx";
-    rev = "f7acc8c9f4e01d44ff3ad65d50e96be337741584";
+    repo = "pysecstr";
+    rev = "5d143cffd144378e8d50710de6bc05659f8645fd";
     flake = false;
   };
   inputs.zigtoml-src = {
