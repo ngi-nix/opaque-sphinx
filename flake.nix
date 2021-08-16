@@ -66,7 +66,12 @@
       # System types to support.
       supportedSystems = [ "x86_64-linux" ];
 
-      # Mapping from Nix' "system" to Android's "system".
+      # Mapping from Nix' "system" to Android's "system". The key corresponds
+      # to the usual "system" variable content in Nix context. The value
+      # corresponds to the same concept, however in Android context. See also
+      # pkgs/development/androidndk-pkgs/androidndk-pkgs.nix. This is needed
+      # here in order to pull the right binaries from the Android NDK when
+      # building androsphinx.
       androidSystemByNixSystem = {
         "x86_64-linux" = "linux-x86_64";
         "x86_64-darwin" = "darwin-x86_64";
@@ -100,7 +105,6 @@
           ndk = sdk.ndk-bundle;
           buildPythonPackage = python3.pkgs.buildPythonPackage;
           zxcvbn = python3.pkgs.zxcvbn;
-          androidSystem = androidSystemByNixSystem.${system};
           libsodium-src = libsodium.src; # use nixpkgs
 
           pysodium = callPackage ./pkgs/pysodium {
@@ -129,6 +133,7 @@
           androsphinxCryptoLibs = callPackage ./pkgs/androsphinx/libs.nix {
             version = androsphinx-version;
             src = androsphinx-src;
+            androidSystem = androidSystemByNixSystem.${system};
             inherit libsphinx-src;
           };
           androsphinx = callPackage ./pkgs/androsphinx {
