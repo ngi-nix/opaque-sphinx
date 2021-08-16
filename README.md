@@ -102,7 +102,7 @@ $ nix develop
 $ cd ~/sphinx-test
 
 # Setup the client configuration.
-# Note: For a more realistic scenarion, replache 127.0.0.1 by the actual IP
+# Note: For a more realistic scenario, replache 127.0.0.1 by the actual IP
 # address of the localhost. Also note that the same cfg file (see above) is used.
 $ cat <<EOF >> sphinx.cfg # append to the cfg file
 [client]
