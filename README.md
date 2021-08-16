@@ -1,20 +1,33 @@
-# Androsphinx
+# SPHINX
 
-This flake packages the Android app [androsphinx](https://github.com/dnet/androsphinx) and some associated packages.
+This flake packages various packages related to [SPHINX](https://github.com/stef/libsphinx/): a password **S**tore that **P**erfectly **H**ides from **I**tself (**N**o **X**aggeration).
+
+A sphinx client/server architecture allows to exchange secrets secure way.
+The server never decrypts any passwords itself.
+All encreption/decription is happening on the client side.
+See the [readme](https://github.com/stef/libsphinx/#what-is-this-thing) for a good explanation.
 
 NGI Project pages:
 
 * https://review.ngi-0.eu:2019/partner/project/2019-02-081
-* https://nlnet.nl/project/OpaqueSphinxServer/index.html
+* https://review.ngi-0.eu:2019/partner/project/2019-04-088
 
-The app is built on top of [libsphinx](https://github.com/stef/libsphinx/) (see the [readme](https://github.com/stef/libsphinx/#what-is-this-thing) for a good explanation of the library).
+* https://nlnet.nl/project/OpaqueSphinx/
+* https://nlnet.nl/project/OpaqueSphinxServer/
 
-Briefly, the app allows you to communicate with a sphinx server (think "password server") to read & write credentials in a secure way.
-The server never decrypts any passwords itself.
-All encreption/decription is happening on the client side.
+The core library, `libsphinx`, is used to build several software components:
 
-There is a reference Python sphinx client/server implementation called [pwdsphinx](https://github.com/stef/pwdsphinx) that is also packaged.
-This allows to easily test the functionality of the Anrdoid app in a local network.
+## Androsphinx
+
+An [android app](https://github.com/dnet/androsphinx) that acts as a sphinx client.
+
+## pwdsphinx
+
+A Python sphinx client/server [implementation](https://github.com/stef/pwdsphinx).
+
+## zphinx-zerver
+
+A Zig sphinx server [implementation](https://github.com/stef/zphinx-zerver).
 
 # Nix packages & their dependencies
 
@@ -30,12 +43,11 @@ Most of the packages below depend (indirectly) on [libsodium](https://github.com
   * Dependencies: libsphinx, pysodium, securestring, qrcodegen
 * [androsphinx](https://github.com/dnet/androsphinx): an Android app wrapping libsphinx.
   * Dependencies: libsodium, libsphinx
+* [zphinx-zerver](https://github.com/stef/zphinx-zerver): a server implementation in Zig.
+  * Dependencies: BearSSL, libsphinx, zig-toml
 
 Note: The androsphinx readme suggests to use ``qrencode`` to generate a QR code that is used to configure the phone. Similarly, pwdsphinx' readme suggests ``qrcodegen``.
 These tools fulfill the same task.
-
-Strictly speaking, this Flake packages more than needed.
-The additional packages (``pwdsphinx`` & its upstream dependencies) allows to easily test the Android app.
 
 # Local test setup
 
