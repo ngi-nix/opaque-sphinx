@@ -20,14 +20,13 @@ buildPythonPackage rec {
 
   checkInputs = [ crudini ];
   preCheck = ''
-    # The checks try to read some values from the sphinx.cfg file but don't use
-    # them. We can use some dummy values.
+    # Prepare the expected config file for the tests.
     FILE=sphinx.cfg
     cp sphinx.cfg_sample $FILE
-    for SECTION in client server ; do
-      for PREFIX in ssl_key ssl_cert ; do
-        crudini --set $FILE $SECTION $PREFIX ./''${PREFIX}.doesnt-exist.pem
-      done
+    # Some settings are commented out but must be activated.
+    # "# address=..." -> "address=..."
+    for PREFIX in address timeout ; do
+      sed -i "s/^#[[:space:]]*$PREFIX=/$PREFIX=/" $FILE
     done
   '';
 }
