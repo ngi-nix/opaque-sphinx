@@ -83,13 +83,13 @@
     let
 
       getVersion = input: builtins.substring 0 7 input.rev;
-      equihash-version = getVersion equihash-src;
-      securestring-version = getVersion securestring-src;
-      pysodium-version = getVersion pysodium-src;
-      pwdsphinx-version = getVersion pwdsphinx-src;
-      libsphinx-version = getVersion libsphinx-src;
-      qrcodegen-version = getVersion qrcodegen-src;
       androsphinx-version = getVersion androsphinx-src;
+      equihash-version = getVersion equihash-src;
+      libsphinx-version = getVersion libsphinx-src;
+      pwdsphinx-version = getVersion pwdsphinx-src;
+      pysodium-version = getVersion pysodium-src;
+      qrcodegen-version = getVersion qrcodegen-src;
+      securestring-version = getVersion securestring-src;
       zphinxzerver-version = getVersion zphinxzerver-src;
 
       # System types to support.
