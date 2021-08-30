@@ -33,6 +33,23 @@
         "url": "https://www.bearssl.org/git/BearSSL"
       }
     },
+    "equihash-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1629123563,
+        "narHash": "sha256-ZzdcnhtdX9ixecIbicejkeltcwwH4jv8K61MMRiEpxg=",
+        "owner": "stef",
+        "repo": "equihash",
+        "rev": "d4657dcb588ae852f8ab5c777837b0578caa3ffb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "stef",
+        "repo": "equihash",
+        "rev": "d4657dcb588ae852f8ab5c777837b0578caa3ffb",
+        "type": "github"
+      }
+    },
     "libsphinx-src": {
       "flake": false,
       "locked": {
@@ -121,6 +138,7 @@
       "inputs": {
         "androsphinx-src": "androsphinx-src",
         "bearssl-src": "bearssl-src",
+        "equihash-src": "equihash-src",
         "libsphinx-src": "libsphinx-src",
         "nixpkgs": "nixpkgs",
         "pwdsphinx-src": "pwdsphinx-src",

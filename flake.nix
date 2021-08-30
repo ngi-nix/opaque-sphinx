@@ -14,6 +14,13 @@
     url = "git+https://www.bearssl.org/git/BearSSL";
     flake = false;
   };
+  inputs.equihash-src = {
+    type = "github";
+    owner = "stef";
+    repo = "equihash";
+    rev = "d4657dcb588ae852f8ab5c777837b0578caa3ffb";
+    flake = false;
+  };
   inputs.libsphinx-src = {
     type = "github";
     owner = "stef";
@@ -70,12 +77,13 @@
     flake = false;
   };
 
-  outputs = { self, nixpkgs, bearssl-src, securestring-src, pysodium-src
-    , androsphinx-src, libsphinx-src, pwdsphinx-src, qrcodegen-src, zigtoml-src
-    , zphinxzerver-src }:
+  outputs = { self, androsphinx-src, bearssl-src, equihash-src, libsphinx-src
+    , nixpkgs, pwdsphinx-src, pysodium-src, qrcodegen-src, securestring-src
+    , zigtoml-src, zphinxzerver-src }:
     let
 
       getVersion = input: builtins.substring 0 7 input.rev;
+      equihash-version = getVersion equihash-src;
       securestring-version = getVersion securestring-src;
       pysodium-version = getVersion pysodium-src;
       pwdsphinx-version = getVersion pwdsphinx-src;
@@ -128,6 +136,15 @@
           zxcvbn = python3.pkgs.zxcvbn;
           libsodium-src = libsodium.src; # use nixpkgs
 
+          equihash = callPackage ./pkgs/equihash {
+            version = equihash-version;
+            src = equihash-src;
+          };
+          pyequihash = callPackage ./pkgs/equihash/pyequihash.nix {
+            version = equihash-version;
+            src = equihash-src;
+            inherit equihash;
+          };
           pysodium = callPackage ./pkgs/pysodium {
             version = pysodium-version;
             src = pysodium-src;
@@ -147,7 +164,7 @@
           pwdsphinx = callPackage ./pkgs/pwdsphinx {
             version = pwdsphinx-version;
             src = pwdsphinx-src;
-            inherit libsphinx pysodium securestring qrcodegen zxcvbn;
+            inherit libsphinx pyequihash pysodium securestring qrcodegen zxcvbn;
           };
 
           androsphinxCryptoLibs = callPackage ./pkgs/androsphinx/libs.nix {
@@ -187,7 +204,7 @@
       # Provide some binary packages for selected system types.
       packages = forAllSystems (system: {
         inherit (nixpkgsFor.${system})
-          pwdsphinx androsphinx libsphinx zphinxzerver;
+          androsphinx equihash libsphinx pwdsphinx zphinxzerver;
       });
 
       defaultPackage =

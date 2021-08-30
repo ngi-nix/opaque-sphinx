@@ -1,11 +1,13 @@
-{ pkgs, version, src, libsphinx, pysodium, securestring, qrcodegen, zxcvbn }:
+{ pkgs, version, src, libsphinx, pyequihash, pysodium, securestring, qrcodegen
+, zxcvbn }:
 with pkgs;
 # todo: rename oracle (ando ther binaries?)
 buildPythonPackage rec {
   pname = "pwdsphinx";
   inherit src version;
 
-  propagatedBuildInputs = [ libsphinx pysodium securestring qrcodegen zxcvbn ];
+  propagatedBuildInputs =
+    [ libsphinx pyequihash pysodium securestring qrcodegen zxcvbn ];
 
   postPatch = let soext = stdenv.hostPlatform.extensions.sharedLibrary;
   in ''
