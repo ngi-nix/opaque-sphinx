@@ -1,19 +1,20 @@
-{ pkgs, version, src, bearssl-src, libsphinx-src, zigtoml-src }:
+{ pkgs, version, src, bearssl-src, equihash, libsphinx-src, zigtoml-src }:
 with pkgs;
 stdenv.mkDerivation {
   name = "zphinxzerver-${version}";
   inherit version src;
 
-  buildInputs = [ zig libsodium.dev rename ];
-
-  patches = [ ./build.zig.patch ];
+  buildInputs = [ libsodium.dev rename zig ];
 
   postPatch = ''
-    substituteInPlace ./sodium.h \
-      --replace '"/usr/' '"/${libsodium.dev}/'
-  '';
+    substituteInPlace build.zig \
+      --replace 'exe.addIncludeDir(".");' \
+      'exe.addIncludeDir("."); exe.addIncludeDir("${libsodium.dev}/include"); exe.addIncludeDir("${equihash}/include");'
 
-  #dontConfigure = true;
+    substituteInPlace build.zig \
+      --replace 'exe.addLibPath("/usr/lib");' \
+      'exe.addLibPath("/usr/lib"); exe.addLibPath("${equihash}/lib");'
+  '';
 
   buildPhase = ''
     # Do not use the git submodules.

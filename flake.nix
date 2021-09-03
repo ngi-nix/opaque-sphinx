@@ -73,7 +73,7 @@
     type = "github";
     owner = "stef";
     repo = "zphinx-zerver";
-    rev = "5e4b7af350bed33ae52de17e11b2d65dc4edc691";
+    rev = "816dea4413e8f111fdf969abccce119ae4825bcc";
     flake = false;
   };
 
@@ -180,7 +180,7 @@
           zphinxzerver = callPackage ./pkgs/zphinxzerver {
             version = zphinxzerver-version;
             src = zphinxzerver-src;
-            inherit bearssl-src libsphinx-src zigtoml-src;
+            inherit bearssl-src equihash libsphinx-src zigtoml-src;
           };
         };
 
