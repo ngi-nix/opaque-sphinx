@@ -186,17 +186,17 @@
     "zphinxzerver-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1617326959,
-        "narHash": "sha256-CK/VHDaja01Oq/WCSrP6nKeDsd/9jE4TM8VeUgeyx6Y=",
+        "lastModified": 1626458772,
+        "narHash": "sha256-VkeFfx5MJGDFwXhwQAM0KmYwzRFZCIrlMqwRl27yirc=",
         "owner": "stef",
         "repo": "zphinx-zerver",
-        "rev": "5e4b7af350bed33ae52de17e11b2d65dc4edc691",
+        "rev": "b33107981bf926db63b01979297e24d8a56588d1",
         "type": "github"
       },
       "original": {
         "owner": "stef",
         "repo": "zphinx-zerver",
-        "rev": "5e4b7af350bed33ae52de17e11b2d65dc4edc691",
+        "rev": "b33107981bf926db63b01979297e24d8a56588d1",
         "type": "github"
       }
     }

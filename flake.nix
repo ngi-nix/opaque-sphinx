@@ -38,7 +38,7 @@
     type = "github";
     owner = "stef";
     repo = "pwdsphinx";
-    rev = "f7acc8c9f4e01d44ff3ad65d50e96be337741584";
+    rev = "7fde7bbcb91b83f035c5d5783f6fedb15e58ca1d";
     flake = false;
   };
   inputs.pysodium-src = {
@@ -73,7 +73,7 @@
     type = "github";
     owner = "stef";
     repo = "zphinx-zerver";
-    rev = "816dea4413e8f111fdf969abccce119ae4825bcc";
+    rev = "b33107981bf926db63b01979297e24d8a56588d1";
     flake = false;
   };
 
