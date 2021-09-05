@@ -262,24 +262,7 @@
                 -keyout ssl_key.pem -out ssl_cert.pem -batch
               ls ssl_cert.pem ssl_key.pem # make sure these files exist.
 
-              # Configure client & server.
-              cat <<EOF > sphinx.cfg
-              [client]
-              verbose = False
-              address = 127.0.0.1
-              port = 2355
-              datadir = ./datadir
-              ssl_key = ./ssl_key.pem
-              ssl_cert = ./ssl_cert.pem
-
-              [server]
-              verbose = False
-              address = 0.0.0.0
-              port = 2355
-              datadir = ./datadir
-              ssl_key = ./ssl_key.pem
-              ssl_cert = ./ssl_cert.pem
-              EOF
+              cp ${./sphinx.test.cfg} ./sphinx.cfg
 
               # Run server in background.
               oracle 2>&1 > oracle.log &
@@ -314,48 +297,18 @@
                 -out ssl_cert.pem -batch
               ls ssl_cert.pem ssl_key.pem # make sure these files exist.
 
-              # Configure pwdsphinx client.
-              mkdir client; cd client
-              cat <<EOF > sphinx.cfg
-              [client]
-              verbose = true
-              address = 127.0.0.1
-              port = 2355
-              datadir = ../datadir
-              ssl_key = ../ssl_key.pem
-              ssl_cert = ../ssl_cert.pem
-              EOF
-              cd -
-
-              # Configure zphinxzerver. Currently, the same config file cannot
-              # be used for both the Python and the Zig implementation. See
-              # https://github.com/stef/zphinx-zerver/issues/1.
-              mkdir server; cd server
-              cat <<EOF > sphinx.cfg
-              [server]
-              verbose = true
-              address = "127.0.0.1"
-              port = 2355
-              datadir = "../datadir"
-              ssl_key = "../ssl_key.pem"
-              ssl_cert = "../ssl_cert.pem"
-              EOF
-              cd -
+              cp ${./sphinx.test.cfg} ./sphinx.cfg
 
               # Run zphinxzerver in background.
-              cd server
               zphinxzerver-oracle 2>&1 > oracle.log &
-              cd -
 
               # Access server through pwdsphinx client.
-              cd client
               MASTER_PASSWORD="l@kjq34pseudorandomrjaop0Pq3y45980A;hdf"
               sphinx init
               printf $MASTER_PASSWORD | sphinx create user site uld 10 > password1
               printf $MASTER_PASSWORD | sphinx get user site > password2
               # Make sure the password can be retrieved.
               diff password1 password2
-              cd -
             '';
 
             installPhase = ''
