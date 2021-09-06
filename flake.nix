@@ -1,5 +1,4 @@
 {
-  # tood: equihash
   description =
     "SPHINX - A password Store that Perfectly Hides from Itself (No Xaggeration)";
 
@@ -7,7 +6,7 @@
     type = "github";
     owner = "dnet";
     repo = "androsphinx";
-    rev = "afcab7478357904d323a70a87d2037f7f56fb2f9";
+    rev = "8fddb9aab0d148520c29c050af814a35f24a6a37";
     flake = false;
   };
   inputs.bearssl-src = {
@@ -170,7 +169,7 @@
           androsphinxCryptoLibs = callPackage ./pkgs/androsphinx/libs.nix {
             version = androsphinx-version;
             src = androsphinx-src;
-            inherit libsphinx-src libsodium-src ndk androidSystem;
+            inherit equihash-src libsphinx-src libsodium-src ndk androidSystem;
           };
           androsphinx = callPackage ./pkgs/androsphinx {
             version = androsphinx-version;

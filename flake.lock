@@ -3,17 +3,17 @@
     "androsphinx-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1616793920,
-        "narHash": "sha256-CERZgW5BSxkExJq7juoUmGlUp5fSUhUOmF+xo3xW1Nc=",
+        "lastModified": 1626095536,
+        "narHash": "sha256-aPjMq89OO3yADC8EQ88ioN82E9D+hWoLyb1UFXw6JuQ=",
         "owner": "dnet",
         "repo": "androsphinx",
-        "rev": "afcab7478357904d323a70a87d2037f7f56fb2f9",
+        "rev": "8fddb9aab0d148520c29c050af814a35f24a6a37",
         "type": "github"
       },
       "original": {
         "owner": "dnet",
         "repo": "androsphinx",
-        "rev": "afcab7478357904d323a70a87d2037f7f56fb2f9",
+        "rev": "8fddb9aab0d148520c29c050af814a35f24a6a37",
         "type": "github"
       }
     },

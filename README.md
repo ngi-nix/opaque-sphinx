@@ -21,6 +21,14 @@ The core library, `libsphinx`, is used to build several software components:
 
 An [android app](https://github.com/dnet/androsphinx) that acts as a sphinx client.
 
+The `./pkgs/androsphinx/gradle-env.*` files have been generated using [gradle2nix](https://github.com/tadfisher/gradle2nix):
+
+```bash
+$ git clone https://github.com/dnet/androsphinx.git && cd androsphinx
+$ export JAVA_HOME=/nix/store/...-openjdk-.../ # gradle2nix needs this
+$ gradle2nix
+```
+
 ## pwdsphinx
 
 A Python sphinx client/server [implementation](https://github.com/stef/pwdsphinx).

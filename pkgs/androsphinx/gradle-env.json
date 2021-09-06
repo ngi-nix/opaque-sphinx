@@ -5856,6 +5856,36 @@
         },
         {
           "id": {
+            "group": "com.commonsware.cwac",
+            "name": "security",
+            "version": "0.8.0",
+            "type": "aar",
+            "extension": "aar"
+          },
+          "name": "security-0.8.0.aar",
+          "path": "com/commonsware/cwac/security/0.8.0",
+          "urls": [
+            "https://s3.amazonaws.com/repo.commonsware.com/com/commonsware/cwac/security/0.8.0/security-0.8.0.aar"
+          ],
+          "sha256": "dc9c9318ceddbb425e22525fea28e1955d33d3dca235df9f674d49c02888de3c"
+        },
+        {
+          "id": {
+            "group": "com.commonsware.cwac",
+            "name": "security",
+            "version": "0.8.0",
+            "type": "pom",
+            "extension": "pom"
+          },
+          "name": "security-0.8.0.pom",
+          "path": "com/commonsware/cwac/security/0.8.0",
+          "urls": [
+            "https://s3.amazonaws.com/repo.commonsware.com/com/commonsware/cwac/security/0.8.0/security-0.8.0.pom"
+          ],
+          "sha256": "9ae637467337050947344b3ba4257f741e0e4383d353b7fc0fe27da24d049cd8"
+        },
+        {
+          "id": {
             "group": "com.google",
             "name": "google",
             "version": "1",
@@ -6393,6 +6423,36 @@
             "https://jcenter.bintray.com/com/googlecode/json-simple/json-simple/1.1/json-simple-1.1.pom"
           ],
           "sha256": "47a89be0fa0fedd476db5fd2c83487654d2a119c391f83a142be876667cf7dab"
+        },
+        {
+          "id": {
+            "group": "com.nulab-inc",
+            "name": "zxcvbn",
+            "version": "1.5.2",
+            "type": "jar",
+            "extension": "jar"
+          },
+          "name": "zxcvbn-1.5.2.jar",
+          "path": "com/nulab-inc/zxcvbn/1.5.2",
+          "urls": [
+            "https://jcenter.bintray.com/com/nulab-inc/zxcvbn/1.5.2/zxcvbn-1.5.2.jar"
+          ],
+          "sha256": "69b9d56a7b05e43eac4ec87c7c393383bd0bc556ac71f265db0050a7c484f68f"
+        },
+        {
+          "id": {
+            "group": "com.nulab-inc",
+            "name": "zxcvbn",
+            "version": "1.5.2",
+            "type": "pom",
+            "extension": "pom"
+          },
+          "name": "zxcvbn-1.5.2.pom",
+          "path": "com/nulab-inc/zxcvbn/1.5.2",
+          "urls": [
+            "https://jcenter.bintray.com/com/nulab-inc/zxcvbn/1.5.2/zxcvbn-1.5.2.pom"
+          ],
+          "sha256": "7a83293f2e7ed2cfef2434675814de91da0eb90aa0d67616f0bf4e3c4d1d4c83"
         },
         {
           "id": {
