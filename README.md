@@ -199,3 +199,6 @@ You should receive the same password as the CLI client.
 
 * https://github.com/dnet/androsphinx/issues/8
 * https://github.com/dnet/androsphinx/pull/5
+
+* https://github.com/stef/zphinx-zerver/issues/1
+* https://github.com/stef/zphinx-zerver/issues/2
