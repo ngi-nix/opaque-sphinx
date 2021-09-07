@@ -7,7 +7,7 @@ buildPythonPackage rec {
   inherit src version;
 
   propagatedBuildInputs =
-    [ libsphinx pyequihash pysodium securestring qrcodegen zxcvbn ];
+    [ libsphinx pyequihash pysodium qrcodegen securestring zxcvbn ];
 
   postPatch = let soext = stdenv.hostPlatform.extensions.sharedLibrary;
   in ''

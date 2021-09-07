@@ -1,8 +1,9 @@
 { pkgs, version, src }:
 with pkgs;
 stdenv.mkDerivation {
-  name = "equihash";
+  pname = "equihash";
   inherit version src;
+
   buildInputs = [ libsodium ];
 
   postPatch = ''

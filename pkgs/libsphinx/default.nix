@@ -2,8 +2,9 @@
 with pkgs;
 let standaloneBinaries = "2pass challenge respond derive";
 in stdenv.mkDerivation {
+  pname = "libsphinx";
   inherit src version;
-  name = "libsphinx-${version}";
+
   buildInputs = [ pkgconf libsodium ];
 
   buildPhase = ''

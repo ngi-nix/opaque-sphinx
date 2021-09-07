@@ -1,7 +1,7 @@
 { pkgs, version, src, bearssl-src, equihash, libsphinx-src, zigtoml-src }:
 with pkgs;
 stdenv.mkDerivation {
-  name = "zphinxzerver-${version}";
+  pname = "zphinxzerver";
   inherit version src;
 
   buildInputs = [ libsodium.dev rename zig ];
