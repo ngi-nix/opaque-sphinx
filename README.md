@@ -41,6 +41,7 @@ A Zig sphinx server [implementation](https://github.com/stef/zphinx-zerver).
 
 Most of the packages below depend (indirectly) on [libsodium](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/libraries/libsodium/default.nix). The version shipped with Nix is used.
 
+* [equihash](https://github.com/stef/equihash/): "memory-hard PoW with fast verification"
 * [libsphinx](https://github.com/stef/libsphinx/): "a cryptographic password storage"; a C library and some standalone tools.
   * Dependencies: libsodium
 * [pysodium](https://github.com/stef/pysodium): "a very simple wrapper around libsodium masquerading as nacl"; a Python library
@@ -48,11 +49,11 @@ Most of the packages below depend (indirectly) on [libsodium](https://github.com
 * [securestring](https://github.com/dnet/pysecstr): a Python library to clear "the contents of strings containing cryptographic material"
 * [qrcodegen](https://github.com/nayuki/QR-Code-generator): a QR Code generator library for multiple languages
 * [pwdsphinx](https://github.com/stef/pwdsphinx): Python bindings for libsphinx.
-  * Dependencies: libsphinx, pysodium, securestring, qrcodegen
+  * Dependencies: equihash, libsphinx, pysodium, securestring, qrcodegen
 * [androsphinx](https://github.com/dnet/androsphinx): an Android app wrapping libsphinx.
-  * Dependencies: libsodium, libsphinx
+  * Dependencies: equihash, libsodium, libsphinx
 * [zphinx-zerver](https://github.com/stef/zphinx-zerver): a server implementation in Zig.
-  * Dependencies: BearSSL, libsphinx, zig-toml
+  * Dependencies: BearSSL, equihash, libsphinx, zig-toml
 
 Note: The androsphinx readme suggests to use ``qrencode`` to generate a QR code that is used to configure the phone. Similarly, pwdsphinx' readme suggests ``qrcodegen``.
 These tools fulfill the same task.
