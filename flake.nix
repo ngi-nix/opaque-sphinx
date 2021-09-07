@@ -133,6 +133,7 @@
           ndk = sdk.ndk-bundle;
           buildPythonPackage = python3.pkgs.buildPythonPackage;
           zxcvbn = python3.pkgs.zxcvbn;
+          androidSystem = androidSystemByNixSystem.${system};
           libsodium-src = libsodium.src; # use nixpkgs
 
           equihash = callPackage ./pkgs/equihash {
