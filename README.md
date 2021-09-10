@@ -85,16 +85,8 @@ $ rm -rf ~/sphinx-test ; mkdir ~/sphinx-test && cd ~/sphinx-test
 $ openssl req -nodes -x509 -sha256 -newkey rsa:4096 -keyout ssl_key.pem -out ssl_cert.pem -days 365 -batch
 $ ls ssl_cert.pem ssl_key.pem # make sure these files exist.
 
-# Setup the server configuration.
-$ cat <<EOF > sphinx.cfg
-[server]
-verbose = True
-address = 0.0.0.0
-port = 2355
-datadir = ~/sphinx-test/datadir
-ssl_key = ~/sphinx-test/ssl_key.pem
-ssl_cert = ~/sphinx-test/ssl_cert.pem
-EOF
+# Copy the client & server configuration.
+$ cp $SAMPLE_SPHINX_CFG ./sphinx.cfg # see #devShell.shellHook
 
 # Run the server
 $ oracle # do not kill this process
@@ -109,19 +101,6 @@ Setup the client in a new terminal.
 $ nix develop
 # Go to the test folder.
 $ cd ~/sphinx-test
-
-# Setup the client configuration.
-# Note: For a more realistic scenario, replache 127.0.0.1 by the actual IP
-# address of the localhost. Also note that the same cfg file (see above) is used.
-$ cat <<EOF >> sphinx.cfg # append to the cfg file
-[client]
-verbose = True
-address = 127.0.0.1
-port = 2355
-datadir = ~/sphinx-test/datadir
-ssl_key = ~/sphinx-test/ssl_key.pem
-ssl_cert = ~/sphinx-test/ssl_cert.pem
-EOF
 
 # Generate the master key that is used to derive secrets. This key must be
 # shared among clients.
@@ -165,7 +144,7 @@ adb push ssl_cert.pem mnt/sdcard/ssl_cert.pem # or wherever else you can upload 
 
 # Install the app. (The 'uninstall' command will fail at the first time, of
 # course).
-$ ls $DEBUG_APK # see flake.nix
+$ ls $DEBUG_APK # see #devShell.shellHook
 $ adb uninstall org.hsbp.androsphinx ; adb install $DEBUG_APK
 
 # At this point, you can unplug the phone. Make sure it is connected to the
@@ -195,9 +174,11 @@ You should receive the same password as the CLI client.
 * https://github.com/stef/pwdsphinx/issues/9
 * https://github.com/stef/pwdsphinx/issues/10
 * https://github.com/stef/pwdsphinx/issues/13
+* https://github.com/stef/pwdsphinx/issues/15
 * https://github.com/stef/pwdsphinx/pull/14
 
 * https://github.com/dnet/androsphinx/issues/8
+* https://github.com/dnet/androsphinx/issues/9
 * https://github.com/dnet/androsphinx/pull/5
 
 * https://github.com/stef/zphinx-zerver/issues/1

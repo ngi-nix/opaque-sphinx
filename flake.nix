@@ -198,6 +198,7 @@
           ];
           shellHook = ''
             export DEBUG_APK=${androsphinx}/app-debug.apk
+            export SAMPLE_SPHINX_CFG=${./sphinx.test.cfg}
           '';
         });
 
