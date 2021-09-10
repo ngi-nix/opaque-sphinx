@@ -133,7 +133,6 @@
           ndk = sdk.ndk-bundle;
           buildPythonPackage = python3.pkgs.buildPythonPackage;
           zxcvbn = python3.pkgs.zxcvbn;
-          androidSystem = androidSystemByNixSystem.${system};
           libsodium-src = libsodium.src; # use nixpkgs
 
           equihash = callPackage ./pkgs/equihash {
@@ -170,7 +169,8 @@
           androsphinxCryptoLibs = callPackage ./pkgs/androsphinx/libs.nix {
             version = androsphinx-version;
             src = androsphinx-src;
-            inherit equihash-src libsphinx-src libsodium-src ndk androidSystem;
+            androidSystem = androidSystemByNixSystem.${system};
+            inherit equihash-src libsphinx-src libsodium-src ndk;
           };
           androsphinx = callPackage ./pkgs/androsphinx {
             version = androsphinx-version;
