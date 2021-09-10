@@ -236,8 +236,9 @@
               cp ${androsphinx}/app-debug.apk ./extracted
               cd extracted
               unzip *.apk
-              NUMBER_OF_SHIPPED_LIBRARY_FILES=$(ls -1 lib/*/{libsodium,libsphinx}.so | wc -l)
-              NUMBER_OF_EXPECTED_LIBRARY_FILES=8 # 2 libs for each of the 4 archs
+              NUMBER_OF_SHIPPED_LIBRARY_FILES=$(ls -1 lib/*/*.so | wc -l)
+              # See androsphinx-src/build-libsphinx.sh.
+              NUMBER_OF_EXPECTED_LIBRARY_FILES=16 # 4 libs for each of the 4 archs
               if [[ "$NUMBER_OF_SHIPPED_LIBRARY_FILES" != "$NUMBER_OF_EXPECTED_LIBRARY_FILES" ]] ; then
                 echo "Could not find all expected *.so files in the APK!"
                 exit 1
