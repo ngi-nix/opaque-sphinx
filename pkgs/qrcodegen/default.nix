@@ -1,4 +1,4 @@
-{ pkgs, version, src }:
+{ pkgs, version, src, buildPythonPackage }:
 with pkgs;
 buildPythonPackage {
   pname = "qrcodegen";

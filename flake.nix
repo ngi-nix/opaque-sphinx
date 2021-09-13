@@ -142,15 +142,17 @@
           pyequihash = callPackage ./pkgs/equihash/pyequihash.nix {
             version = equihash-version;
             src = equihash-src;
-            inherit equihash;
+            inherit buildPythonPackage equihash;
           };
           pysodium = callPackage ./pkgs/pysodium {
             version = pysodium-version;
             src = pysodium-src;
+            inherit buildPythonPackage;
           };
           securestring = callPackage ./pkgs/securestring {
             version = securestring-version;
             src = securestring-src;
+            inherit buildPythonPackage;
           };
           libsphinx = callPackage ./pkgs/libsphinx {
             version = libsphinx-version;
@@ -159,11 +161,13 @@
           qrcodegen = callPackage ./pkgs/qrcodegen {
             version = qrcodegen-version;
             src = qrcodegen-src;
+            inherit buildPythonPackage;
           };
           pwdsphinx = callPackage ./pkgs/pwdsphinx {
             version = pwdsphinx-version;
             src = pwdsphinx-src;
-            inherit libsphinx pyequihash pysodium securestring qrcodegen zxcvbn;
+            inherit buildPythonPackage libsphinx pyequihash pysodium
+              securestring qrcodegen zxcvbn;
           };
 
           androsphinxCryptoLibs = callPackage ./pkgs/androsphinx/libs.nix {

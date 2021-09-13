@@ -1,5 +1,5 @@
-{ pkgs, version, src, libsphinx, pyequihash, pysodium, securestring, qrcodegen
-, zxcvbn }:
+{ pkgs, version, src, buildPythonPackage, libsphinx, pyequihash, pysodium
+, securestring, qrcodegen, zxcvbn }:
 with pkgs;
 # todo: rename oracle (ando ther binaries?)
 buildPythonPackage rec {
@@ -18,7 +18,6 @@ buildPythonPackage rec {
       --replace "zxcvbn-python" "zxcvbn"
   '';
 
-  checkInputs = [ crudini ];
   preCheck = ''
     # Prepare the expected config file for the tests.
     FILE=sphinx.cfg

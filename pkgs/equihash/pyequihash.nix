@@ -1,4 +1,4 @@
-{ pkgs, version, src, equihash }:
+{ pkgs, version, src, buildPythonPackage, equihash }:
 with pkgs;
 buildPythonPackage rec {
   pname = "pyequihash";
