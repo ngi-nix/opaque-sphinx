@@ -1,5 +1,5 @@
-{ version, src, buildPythonPackage, openssl }:
-
+{ pkgs, version, src, buildPythonPackage }:
+with pkgs;
 buildPythonPackage rec {
   pname = "securestring";
   inherit src version;

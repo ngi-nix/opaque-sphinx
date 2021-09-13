@@ -1,5 +1,6 @@
-{ version, src, libsodium-src, libsphinx-src, stdenvNoCC, pkgconf, ndk
+{ pkgs, version, src, equihash-src, libsodium-src, libsphinx-src, ndk
 , androidSystem }:
+with pkgs;
 # Use stdenvNoCC to not make GCC interfere with the Android compilers.
 stdenvNoCC.mkDerivation {
   name = "androsphinxCryptoLibs-${version}";
@@ -15,15 +16,16 @@ stdenvNoCC.mkDerivation {
     export ANDROID_NDK_HOME=${ndk}/libexec/android-sdk/ndk-bundle
     export PATH=$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/${androidSystem}/bin:$PATH
     # Do not use the git submodules.
-    rm -rf libsodium libsphinx
+    rm -rf equihash libsodium libsphinx
     tar -xzf ${libsodium-src} && mv ./libsodium-* libsodium
+    cp -r ${equihash-src} ./equihash
     cp -r ${libsphinx-src} ./libsphinx
-    chmod -R +w ./libsphinx
+    chmod -R +w ./libsphinx ./equihash
     sh ./build-libsphinx.sh
   '';
 
   # This derivation is actually not needed separately from androsphinx. The
-  # library files could be compiled before compiling (gradle) the app.
+  # library files could be compiled before compiling the app (with gradle).
   # However, for debugging & rebuilding, it is quite convenient to build the
   # libraries separately.
   installPhase = ''

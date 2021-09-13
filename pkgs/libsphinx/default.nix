@@ -1,8 +1,10 @@
-{ version, src, stdenv, pkgconf, libsodium }:
+{ pkgs, version, src }:
+with pkgs;
 let standaloneBinaries = "2pass challenge respond derive";
 in stdenv.mkDerivation {
+  pname = "libsphinx";
   inherit src version;
-  name = "libsphinx-${version}";
+
   buildInputs = [ pkgconf libsodium ];
 
   buildPhase = ''

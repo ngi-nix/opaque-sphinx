@@ -1,7 +1,8 @@
-{ version, src, buildPythonPackage }:
-
+{ pkgs, version, src, buildPythonPackage }:
+with pkgs;
 buildPythonPackage {
-  name = "qrcodegen";
+  pname = "qrcodegen";
   inherit version src;
+
   sourceRoot = "source/python";
 }

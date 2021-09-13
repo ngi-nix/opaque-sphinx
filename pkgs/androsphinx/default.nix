@@ -1,6 +1,8 @@
-{ version, src, androsphinxCryptoLibs, sdk, callPackage }:
+{ pkgs, version, src, androsphinxCryptoLibs, sdk }:
+with pkgs;
 let buildGradle = callPackage ./gradle-env.nix { };
 in buildGradle {
+  pname = "androsphinx";
   inherit version src;
 
   envSpec = ./gradle-env.json; # todo: updaate gradle2nix?

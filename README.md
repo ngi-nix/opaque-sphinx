@@ -1,25 +1,47 @@
-# Androsphinx
+# SPHINX
 
-This flake packages the Android app [androsphinx](https://github.com/dnet/androsphinx) and some associated packages.
+This flake packages various packages related to [SPHINX](https://github.com/stef/libsphinx/): a password **S**tore that **P**erfectly **H**ides from **I**tself (**N**o **X**aggeration).
+
+A sphinx client/server architecture allows to exchange secrets secure way.
+The server never decrypts any passwords itself.
+All encreption/decription is happening on the client side.
+See the [readme](https://github.com/stef/libsphinx/#what-is-this-thing) for a good explanation.
 
 NGI Project pages:
 
 * https://review.ngi-0.eu:2019/partner/project/2019-02-081
-* https://nlnet.nl/project/OpaqueSphinxServer/index.html
+* https://review.ngi-0.eu:2019/partner/project/2019-04-088
 
-The app is built on top of [libsphinx](https://github.com/stef/libsphinx/) (see the [readme](https://github.com/stef/libsphinx/#what-is-this-thing) for a good explanation of the library).
+* https://nlnet.nl/project/OpaqueSphinx/
+* https://nlnet.nl/project/OpaqueSphinxServer/
 
-Briefly, the app allows you to communicate with a sphinx server (think "password server") to read & write credentials in a secure way.
-The server never decrypts any passwords itself.
-All encreption/decription is happening on the client side.
+The core library, `libsphinx`, is used to build several software components:
 
-There is a reference Python sphinx client/server implementation called [pwdsphinx](https://github.com/stef/pwdsphinx) that is also packaged.
-This allows to easily test the functionality of the Anrdoid app in a local network.
+## Androsphinx
+
+An [android app](https://github.com/dnet/androsphinx) that acts as a sphinx client.
+
+The `./pkgs/androsphinx/gradle-env.*` files have been generated using [gradle2nix](https://github.com/tadfisher/gradle2nix):
+
+```bash
+$ git clone https://github.com/dnet/androsphinx.git && cd androsphinx
+$ export JAVA_HOME=/nix/store/...-openjdk-.../ # gradle2nix needs this
+$ gradle2nix
+```
+
+## pwdsphinx
+
+A Python sphinx client/server [implementation](https://github.com/stef/pwdsphinx).
+
+## zphinx-zerver
+
+A Zig sphinx server [implementation](https://github.com/stef/zphinx-zerver).
 
 # Nix packages & their dependencies
 
 Most of the packages below depend (indirectly) on [libsodium](https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/libraries/libsodium/default.nix). The version shipped with Nix is used.
 
+* [equihash](https://github.com/stef/equihash/): "memory-hard PoW with fast verification"
 * [libsphinx](https://github.com/stef/libsphinx/): "a cryptographic password storage"; a C library and some standalone tools.
   * Dependencies: libsodium
 * [pysodium](https://github.com/stef/pysodium): "a very simple wrapper around libsodium masquerading as nacl"; a Python library
@@ -27,15 +49,14 @@ Most of the packages below depend (indirectly) on [libsodium](https://github.com
 * [securestring](https://github.com/dnet/pysecstr): a Python library to clear "the contents of strings containing cryptographic material"
 * [qrcodegen](https://github.com/nayuki/QR-Code-generator): a QR Code generator library for multiple languages
 * [pwdsphinx](https://github.com/stef/pwdsphinx): Python bindings for libsphinx.
-  * Dependencies: libsphinx, pysodium, securestring, qrcodegen
+  * Dependencies: equihash, libsphinx, pysodium, securestring, qrcodegen
 * [androsphinx](https://github.com/dnet/androsphinx): an Android app wrapping libsphinx.
-  * Dependencies: libsodium, libsphinx
+  * Dependencies: equihash, libsodium, libsphinx
+* [zphinx-zerver](https://github.com/stef/zphinx-zerver): a server implementation in Zig.
+  * Dependencies: BearSSL, equihash, libsphinx, zig-toml
 
 Note: The androsphinx readme suggests to use ``qrencode`` to generate a QR code that is used to configure the phone. Similarly, pwdsphinx' readme suggests ``qrcodegen``.
 These tools fulfill the same task.
-
-Strictly speaking, this Flake packages more than needed.
-The additional packages (``pwdsphinx`` & its upstream dependencies) allows to easily test the Android app.
 
 # Local test setup
 
@@ -64,16 +85,8 @@ $ rm -rf ~/sphinx-test ; mkdir ~/sphinx-test && cd ~/sphinx-test
 $ openssl req -nodes -x509 -sha256 -newkey rsa:4096 -keyout ssl_key.pem -out ssl_cert.pem -days 365 -batch
 $ ls ssl_cert.pem ssl_key.pem # make sure these files exist.
 
-# Setup the server configuration.
-$ cat <<EOF > sphinx.cfg
-[server]
-verbose = True
-address = 0.0.0.0
-port = 2355
-datadir = ~/sphinx-test/datadir
-ssl_key = ~/sphinx-test/ssl_key.pem
-ssl_cert = ~/sphinx-test/ssl_cert.pem
-EOF
+# Copy the client & server configuration.
+$ cp $SAMPLE_SPHINX_CFG ./sphinx.cfg # see #devShell.shellHook
 
 # Run the server
 $ oracle # do not kill this process
@@ -88,19 +101,6 @@ Setup the client in a new terminal.
 $ nix develop
 # Go to the test folder.
 $ cd ~/sphinx-test
-
-# Setup the client configuration.
-# Note: For a more realistic scenarion, replache 127.0.0.1 by the actual IP
-# address of the localhost. Also note that the same cfg file (see above) is used.
-$ cat <<EOF >> sphinx.cfg # append to the cfg file
-[client]
-verbose = True
-address = 127.0.0.1
-port = 2355
-datadir = ~/sphinx-test/datadir
-ssl_key = ~/sphinx-test/ssl_key.pem
-ssl_cert = ~/sphinx-test/ssl_cert.pem
-EOF
 
 # Generate the master key that is used to derive secrets. This key must be
 # shared among clients.
@@ -144,7 +144,7 @@ adb push ssl_cert.pem mnt/sdcard/ssl_cert.pem # or wherever else you can upload 
 
 # Install the app. (The 'uninstall' command will fail at the first time, of
 # course).
-$ ls $DEBUG_APK # see flake.nix
+$ ls $DEBUG_APK # see #devShell.shellHook
 $ adb uninstall org.hsbp.androsphinx ; adb install $DEBUG_APK
 
 # At this point, you can unplug the phone. Make sure it is connected to the
@@ -174,7 +174,12 @@ You should receive the same password as the CLI client.
 * https://github.com/stef/pwdsphinx/issues/9
 * https://github.com/stef/pwdsphinx/issues/10
 * https://github.com/stef/pwdsphinx/issues/13
+* https://github.com/stef/pwdsphinx/issues/15
 * https://github.com/stef/pwdsphinx/pull/14
 
 * https://github.com/dnet/androsphinx/issues/8
+* https://github.com/dnet/androsphinx/issues/9
 * https://github.com/dnet/androsphinx/pull/5
+
+* https://github.com/stef/zphinx-zerver/issues/1
+* https://github.com/stef/zphinx-zerver/issues/2

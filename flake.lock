@@ -3,17 +3,50 @@
     "androsphinx-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1616793920,
-        "narHash": "sha256-CERZgW5BSxkExJq7juoUmGlUp5fSUhUOmF+xo3xW1Nc=",
+        "lastModified": 1626095536,
+        "narHash": "sha256-aPjMq89OO3yADC8EQ88ioN82E9D+hWoLyb1UFXw6JuQ=",
         "owner": "dnet",
         "repo": "androsphinx",
-        "rev": "afcab7478357904d323a70a87d2037f7f56fb2f9",
+        "rev": "8fddb9aab0d148520c29c050af814a35f24a6a37",
         "type": "github"
       },
       "original": {
         "owner": "dnet",
         "repo": "androsphinx",
-        "rev": "afcab7478357904d323a70a87d2037f7f56fb2f9",
+        "rev": "8fddb9aab0d148520c29c050af814a35f24a6a37",
+        "type": "github"
+      }
+    },
+    "bearssl-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1611758096,
+        "narHash": "sha256-jm5WLCyQ/T2BxlPfn56G9iZyZg/RyWq4JFa8cspzkkY=",
+        "ref": "master",
+        "rev": "79b1a9996c094ff593ae50bc4edc1f349f39dd6d",
+        "revCount": 149,
+        "type": "git",
+        "url": "https://www.bearssl.org/git/BearSSL"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://www.bearssl.org/git/BearSSL"
+      }
+    },
+    "equihash-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1629123563,
+        "narHash": "sha256-ZzdcnhtdX9ixecIbicejkeltcwwH4jv8K61MMRiEpxg=",
+        "owner": "stef",
+        "repo": "equihash",
+        "rev": "d4657dcb588ae852f8ab5c777837b0578caa3ffb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "stef",
+        "repo": "equihash",
+        "rev": "d4657dcb588ae852f8ab5c777837b0578caa3ffb",
         "type": "github"
       }
     },
@@ -53,17 +86,17 @@
     "pwdsphinx-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1617792842,
-        "narHash": "sha256-qFPqF6T1R0Hn8NHAbX8Ak9nhHtkxeKwfopd0cDkAGZE=",
+        "lastModified": 1626465956,
+        "narHash": "sha256-SxysoOHyNyZcrGm6qZxEps7iJSpgfyDOSeVUntAx4cE=",
         "owner": "stef",
         "repo": "pwdsphinx",
-        "rev": "f7acc8c9f4e01d44ff3ad65d50e96be337741584",
+        "rev": "7fde7bbcb91b83f035c5d5783f6fedb15e58ca1d",
         "type": "github"
       },
       "original": {
         "owner": "stef",
         "repo": "pwdsphinx",
-        "rev": "f7acc8c9f4e01d44ff3ad65d50e96be337741584",
+        "rev": "7fde7bbcb91b83f035c5d5783f6fedb15e58ca1d",
         "type": "github"
       }
     },
@@ -104,12 +137,16 @@
     "root": {
       "inputs": {
         "androsphinx-src": "androsphinx-src",
+        "bearssl-src": "bearssl-src",
+        "equihash-src": "equihash-src",
         "libsphinx-src": "libsphinx-src",
         "nixpkgs": "nixpkgs",
         "pwdsphinx-src": "pwdsphinx-src",
         "pysodium-src": "pysodium-src",
         "qrcodegen-src": "qrcodegen-src",
-        "securestring-src": "securestring-src"
+        "securestring-src": "securestring-src",
+        "zigtoml-src": "zigtoml-src",
+        "zphinxzerver-src": "zphinxzerver-src"
       }
     },
     "securestring-src": {
@@ -126,6 +163,40 @@
         "owner": "dnet",
         "repo": "pysecstr",
         "rev": "5d143cffd144378e8d50710de6bc05659f8645fd",
+        "type": "github"
+      }
+    },
+    "zigtoml-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1605577729,
+        "narHash": "sha256-fspGKgJV8Vc0IkVzoLVB9WTwlauQKNG5I27GMPp5Qv0=",
+        "owner": "aeronavery",
+        "repo": "zig-toml",
+        "rev": "299e2d9f87816a5ce374853e03f13176b821b81e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "aeronavery",
+        "repo": "zig-toml",
+        "rev": "299e2d9f87816a5ce374853e03f13176b821b81e",
+        "type": "github"
+      }
+    },
+    "zphinxzerver-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1626458772,
+        "narHash": "sha256-VkeFfx5MJGDFwXhwQAM0KmYwzRFZCIrlMqwRl27yirc=",
+        "owner": "stef",
+        "repo": "zphinx-zerver",
+        "rev": "b33107981bf926db63b01979297e24d8a56588d1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "stef",
+        "repo": "zphinx-zerver",
+        "rev": "b33107981bf926db63b01979297e24d8a56588d1",
         "type": "github"
       }
     }

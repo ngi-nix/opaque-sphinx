@@ -1,18 +1,43 @@
 {
-  description = "Androsphinx - a SPHINX app for Android.";
+  description =
+    "SPHINX - A password Store that Perfectly Hides from Itself (No Xaggeration)";
 
+  inputs.androsphinx-src = {
+    type = "github";
+    owner = "dnet";
+    repo = "androsphinx";
+    rev = "8fddb9aab0d148520c29c050af814a35f24a6a37";
+    flake = false;
+  };
+  inputs.bearssl-src = {
+    url = "git+https://www.bearssl.org/git/BearSSL";
+    flake = false;
+  };
+  inputs.equihash-src = {
+    type = "github";
+    owner = "stef";
+    repo = "equihash";
+    rev = "d4657dcb588ae852f8ab5c777837b0578caa3ffb";
+    flake = false;
+  };
+  inputs.libsphinx-src = {
+    type = "github";
+    owner = "stef";
+    repo = "libsphinx";
+    rev = "51b0c18c94b645bd7ea3bb21aef623318e0b7939";
+    flake = false;
+  };
   inputs.nixpkgs = {
     type = "github";
     owner = "NixOS";
     repo = "nixpkgs";
     ref = "3cadb8b32209d13714b53317ca96ccbd943b6e45";
   };
-
-  inputs.securestring-src = {
+  inputs.pwdsphinx-src = {
     type = "github";
-    owner = "dnet";
-    repo = "pysecstr";
-    rev = "5d143cffd144378e8d50710de6bc05659f8645fd";
+    owner = "stef";
+    repo = "pwdsphinx";
+    rev = "7fde7bbcb91b83f035c5d5783f6fedb15e58ca1d";
     flake = false;
   };
   inputs.pysodium-src = {
@@ -29,39 +54,42 @@
     rev = "71c75cfeb0f06788ebc43a39b704c39fcf5eba7c";
     flake = false;
   };
-  inputs.androsphinx-src = {
+  inputs.securestring-src = {
     type = "github";
     owner = "dnet";
-    repo = "androsphinx";
-    rev = "afcab7478357904d323a70a87d2037f7f56fb2f9";
+    repo = "pysecstr";
+    rev = "5d143cffd144378e8d50710de6bc05659f8645fd";
     flake = false;
   };
-  inputs.libsphinx-src = {
+  inputs.zigtoml-src = {
     type = "github";
-    owner = "stef";
-    repo = "libsphinx";
-    rev = "51b0c18c94b645bd7ea3bb21aef623318e0b7939";
+    owner = "aeronavery";
+    repo = "zig-toml";
+    rev = "299e2d9f87816a5ce374853e03f13176b821b81e";
     flake = false;
   };
-  inputs.pwdsphinx-src = {
+  inputs.zphinxzerver-src = {
     type = "github";
     owner = "stef";
-    repo = "pwdsphinx";
-    rev = "f7acc8c9f4e01d44ff3ad65d50e96be337741584";
+    repo = "zphinx-zerver";
+    rev = "b33107981bf926db63b01979297e24d8a56588d1";
     flake = false;
   };
 
-  outputs = { self, nixpkgs, securestring-src, pysodium-src, androsphinx-src
-    , libsphinx-src, pwdsphinx-src, qrcodegen-src }:
+  outputs = { self, androsphinx-src, bearssl-src, equihash-src, libsphinx-src
+    , nixpkgs, pwdsphinx-src, pysodium-src, qrcodegen-src, securestring-src
+    , zigtoml-src, zphinxzerver-src }:
     let
 
       getVersion = input: builtins.substring 0 7 input.rev;
-      securestring-version = getVersion securestring-src;
-      pysodium-version = getVersion pysodium-src;
-      pwdsphinx-version = getVersion pwdsphinx-src;
-      libsphinx-version = getVersion libsphinx-src;
-      qrcodegen-version = getVersion qrcodegen-src;
       androsphinx-version = getVersion androsphinx-src;
+      equihash-version = getVersion equihash-src;
+      libsphinx-version = getVersion libsphinx-src;
+      pwdsphinx-version = getVersion pwdsphinx-src;
+      pysodium-version = getVersion pysodium-src;
+      qrcodegen-version = getVersion qrcodegen-src;
+      securestring-version = getVersion securestring-src;
+      zphinxzerver-version = getVersion zphinxzerver-src;
 
       # System types to support.
       supportedSystems = [ "x86_64-linux" ];
@@ -107,13 +135,24 @@
           zxcvbn = python3.pkgs.zxcvbn;
           libsodium-src = libsodium.src; # use nixpkgs
 
+          equihash = callPackage ./pkgs/equihash {
+            version = equihash-version;
+            src = equihash-src;
+          };
+          pyequihash = callPackage ./pkgs/equihash/pyequihash.nix {
+            version = equihash-version;
+            src = equihash-src;
+            inherit buildPythonPackage equihash;
+          };
           pysodium = callPackage ./pkgs/pysodium {
             version = pysodium-version;
             src = pysodium-src;
+            inherit buildPythonPackage;
           };
           securestring = callPackage ./pkgs/securestring {
             version = securestring-version;
             src = securestring-src;
+            inherit buildPythonPackage;
           };
           libsphinx = callPackage ./pkgs/libsphinx {
             version = libsphinx-version;
@@ -122,23 +161,30 @@
           qrcodegen = callPackage ./pkgs/qrcodegen {
             version = qrcodegen-version;
             src = qrcodegen-src;
+            inherit buildPythonPackage;
           };
           pwdsphinx = callPackage ./pkgs/pwdsphinx {
             version = pwdsphinx-version;
             src = pwdsphinx-src;
-            zxcvbn = zxcvbn;
-            qrcodegen = qrcodegen;
+            inherit buildPythonPackage libsphinx pyequihash pysodium
+              securestring qrcodegen zxcvbn;
           };
 
           androsphinxCryptoLibs = callPackage ./pkgs/androsphinx/libs.nix {
             version = androsphinx-version;
             src = androsphinx-src;
             androidSystem = androidSystemByNixSystem.${system};
-            inherit libsphinx-src;
+            inherit equihash-src libsphinx-src libsodium-src ndk;
           };
           androsphinx = callPackage ./pkgs/androsphinx {
             version = androsphinx-version;
             src = androsphinx-src;
+          };
+
+          zphinxzerver = callPackage ./pkgs/zphinxzerver {
+            version = zphinxzerver-version;
+            src = zphinxzerver-src;
+            inherit bearssl-src equihash libsphinx-src zigtoml-src;
           };
         };
 
@@ -146,16 +192,24 @@
       devShell = forAllSystems (system:
         with nixpkgsFor.${system};
         mkShell {
-          buildInputs =
-            [ pwdsphinx openssl sdk.androidsdk androsphinx qrencode ];
+          buildInputs = [
+            androsphinx
+            openssl
+            pwdsphinx
+            qrencode
+            sdk.androidsdk
+            zphinxzerver
+          ];
           shellHook = ''
             export DEBUG_APK=${androsphinx}/app-debug.apk
+            export SAMPLE_SPHINX_CFG=${./sphinx.test.cfg}
           '';
         });
 
       # Provide some binary packages for selected system types.
       packages = forAllSystems (system: {
-        inherit (nixpkgsFor.${system}) pwdsphinx androsphinx libsphinx;
+        inherit (nixpkgsFor.${system})
+          androsphinx equihash libsphinx pwdsphinx zphinxzerver;
       });
 
       defaultPackage =
@@ -186,8 +240,9 @@
               cp ${androsphinx}/app-debug.apk ./extracted
               cd extracted
               unzip *.apk
-              NUMBER_OF_SHIPPED_LIBRARY_FILES=$(ls -1 lib/*/{libsodium,libsphinx}.so | wc -l)
-              NUMBER_OF_EXPECTED_LIBRARY_FILES=8 # 2 libs for each of the 4 archs
+              NUMBER_OF_SHIPPED_LIBRARY_FILES=$(ls -1 lib/*/*.so | wc -l)
+              # See androsphinx-src/build-libsphinx.sh.
+              NUMBER_OF_EXPECTED_LIBRARY_FILES=16 # 4 libs for each of the 4 archs
               if [[ "$NUMBER_OF_SHIPPED_LIBRARY_FILES" != "$NUMBER_OF_EXPECTED_LIBRARY_FILES" ]] ; then
                 echo "Could not find all expected *.so files in the APK!"
                 exit 1
@@ -208,30 +263,12 @@
             buildInputs = [ pwdsphinx openssl ];
 
             buildPhase = ''
-
               # Create custom certificate.
               openssl req -nodes -x509 -sha256 -newkey rsa:4096 \
-                -keyout ssl_key.pem -out ssl_cert.pem -days 365 -batch
+                -keyout ssl_key.pem -out ssl_cert.pem -batch
               ls ssl_cert.pem ssl_key.pem # make sure these files exist.
 
-              # Configure client & server.
-              cat <<EOF > sphinx.cfg
-              [client]
-              verbose = False
-              address = 127.0.0.1
-              port = 2355
-              datadir = ./datadir
-              ssl_key = ./ssl_key.pem
-              ssl_cert = ./ssl_cert.pem
-
-              [server]
-              verbose = False
-              address = 0.0.0.0
-              port = 2355
-              datadir = ./datadir
-              ssl_key = ./ssl_key.pem
-              ssl_cert = ./ssl_cert.pem
-              EOF
+              cp ${./sphinx.test.cfg} ./sphinx.cfg
 
               # Run server in background.
               oracle 2>&1 > oracle.log &
@@ -244,9 +281,6 @@
 
               # Make sure the password can be retrieved.
               diff password1 password2
-
-              # Kill the server.
-              kill %1
             '';
 
             installPhase = ''
@@ -254,6 +288,40 @@
             '';
 
           };
+        zphinxzerverTest = with nixpkgsFor.${system};
+          stdenv.mkDerivation {
+            name = "zphinxzerver-test-${pwdsphinx-version}";
+
+            dontUnpack = true;
+
+            buildInputs = [ pwdsphinx zphinxzerver openssl ];
+
+            buildPhase = ''
+              # Create custom certificate.
+              openssl ecparam -genkey -out ssl_key.pem -name secp384r1
+              openssl req -nodes -x509 -sha256 -key ssl_key.pem \
+                -out ssl_cert.pem -batch
+              ls ssl_cert.pem ssl_key.pem # make sure these files exist.
+
+              cp ${./sphinx.test.cfg} ./sphinx.cfg
+
+              # Run zphinxzerver in background.
+              zphinxzerver-oracle 2>&1 > oracle.log &
+
+              # Access server through pwdsphinx client.
+              MASTER_PASSWORD="l@kjq34pseudorandomrjaop0Pq3y45980A;hdf"
+              sphinx init
+              printf $MASTER_PASSWORD | sphinx create user site uld 10 > password1
+              printf $MASTER_PASSWORD | sphinx get user site > password2
+              # Make sure the password can be retrieved.
+              diff password1 password2
+            '';
+
+            installPhase = ''
+              mkdir $out
+            '';
+          };
+
       });
 
     };
