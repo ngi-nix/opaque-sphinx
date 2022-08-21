@@ -10,7 +10,9 @@
     flake = false;
   };
   inputs.bearssl-src = {
-    url = "git+https://www.bearssl.org/git/BearSSL";
+    type = "git";
+    url = "https://www.bearssl.org/git/BearSSL";
+    narHash = "sha256-Mdkfgq8v5n1yKnSoaQBVjwF6JdT76RoZfdv44XT1ivI=";
     flake = false;
   };
   inputs.equihash-src = {
