@@ -20,15 +20,16 @@
     "bearssl-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1611758096,
-        "narHash": "sha256-jm5WLCyQ/T2BxlPfn56G9iZyZg/RyWq4JFa8cspzkkY=",
-        "ref": "master",
-        "rev": "79b1a9996c094ff593ae50bc4edc1f349f39dd6d",
-        "revCount": 149,
+        "lastModified": 1654690539,
+        "narHash": "sha256-Mdkfgq8v5n1yKnSoaQBVjwF6JdT76RoZfdv44XT1ivI=",
+        "ref": "refs/heads/master",
+        "rev": "46f7dddce75227f2e40ab94d66ceb9f19ee6b1b0",
+        "revCount": 152,
         "type": "git",
         "url": "https://www.bearssl.org/git/BearSSL"
       },
       "original": {
+        "narHash": "sha256-Mdkfgq8v5n1yKnSoaQBVjwF6JdT76RoZfdv44XT1ivI=",
         "type": "git",
         "url": "https://www.bearssl.org/git/BearSSL"
       }
